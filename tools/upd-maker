@@ -1,0 +1,65 @@
+#!/bin/bash
+#
+# Утилита для создания пакетов обновления прошивки через Recovery
+#
+# Запуск: upd-maker [name] [update.zip] [образы разделов...]
+#
+# [name] задаёт имя, которое будет высвечиваться во время
+# обновления прошивки.
+#
+# Название файла (без расширения) с образом раздела должно быть
+# таким же, как название устройства /dev/block/*.
+#
+# Образ раздела должен быть ровно в том виде, в котором он записывается
+# в раздел! В частности, sparse ext4 образы должны быть быть
+# предварительно распакованы (например, утилитой simg2img)
+#
+
+NAME="$1"
+UPD=$(readlink -m "$2")
+shift
+shift
+FILES=$*
+
+if [ -z "$FILES" ] ; then
+	echo "Запуск: upd-maker [update.zip] [образы разделов...]"
+	exit 1
+fi
+
+DIR=$(dirname $(readlink -f $0))
+UPD_DIR="$(dirname "$UPD")/update"
+UPD_SCR="$UPD_DIR/META-INF/com/google/android/updater-script"
+
+set -e
+
+echo "Создаём сценарий для update-binary ..."
+rm -rf "$UPD_DIR"
+mkdir -p "$UPD_DIR"
+unzip -q "$DIR/upd-maker-template.zip" -d "$UPD_DIR"
+
+echo "ui_print \"Installing -=<( $NAME )>=-\"" >> "$UPD_SCR"
+
+for x in $FILES ; do
+	file="$(basename "$x")"
+	part="$(basename $(basename "$x" .PARTITION.raw) .PARTITION)"
+	cp "$x" "$UPD_DIR/$file"
+	cat >> "$UPD_SCR" <<EOF
+ui_print " - Flashing partition $part"
+if ! package_extract_file $file /dev/block/$part ; then
+	ui_print "Failed to extract file $file"
+	exit 1
+fi
+EOF
+done
+
+echo "ui_print \"Success!\"" >> "$UPD_SCR"
+
+echo "Создание промежуточного архива ..."
+rm -f "${UPD}~"
+(cd "$UPD_DIR"; zip -qr "${UPD}~" .)
+
+echo "Подписываем архив тестовым ключом ..."
+java -jar "$DIR/zipsigner-3.0.jar" "${UPD}~" "${UPD}"
+rm -f "${UPD}~"
+
+echo "Готово"

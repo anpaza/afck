@@ -1,0 +1,61 @@
+#!/bin/bash
+#
+# Утилита для сборки образа ext4 из распакованной коллекции.
+# Если образ не разбирался (распакованного каталога не существует),
+# просто копирует исходный образ в конечный.
+#
+
+DIR="$1"
+IMG="$2"
+ORIG="$3"
+SECON="$4"
+
+if test -z "$SECON" ; then
+	echo "Собирает распакованный раздел ext4 обратно в файл образа"
+	echo "Запуск: $0 [каталог] [генерируемый образ] [исходный образ либо размер]"
+	echo "	[контексты файлов]"
+	exit 1
+fi
+
+function cmd() {
+	echo $*
+	$*
+}
+
+# Путь к другим утилитам
+TOOLS_DIR=$(dirname $(readlink -f $0))
+# Выходной каталог
+IMG_OUT=$(dirname "$IMG")
+# Название раздела
+PART=$(basename "$IMG" | cut -f 1 -d '.')
+# Файл с владельцем и правами доступа
+STATS=$(dirname "$DIR")/${PART}_statfile.txt
+
+# Проверим, был ли распакован исходный образ
+if test -d "$DIR" ; then
+	set -e
+	# Вычислим размер исходной файловой системы
+	if test -e "${ORIG}.raw" ; then
+		SIZE=$(stat -c "%s" "${ORIG}.raw")
+	elif test -e "$ORIG" ; then
+		SIZE=$(stat -c "%s" "$ORIG")
+	else
+		SIZE="$ORIG"
+	fi
+
+	rm -f "$IMG"
+	cmd $TOOLS_DIR/make_ext4fs -s -l "$SIZE" -T $(date '+%s') -L "$PART" -a "$PART" \
+		-C "$STATS" -S "$SECON" "$IMG" "$DIR"
+	exit 0
+fi
+
+if test -e "$ORIG" ; then
+	set -e
+	# Копируем исходный распакованный образ в конечный
+	# Чтобы не расходовать место на диске, просто создаём жёсткую ссылку
+	ln "$ORIG" "$IMG"
+	exit 0
+fi
+
+echo "$0: нет ни распакованного, ни запакованного образа для создания $IMG"
+exit 2

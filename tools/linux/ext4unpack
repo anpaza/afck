@@ -1,0 +1,66 @@
+#!/bin/bash
+#
+# Утилита для распаковки образа ext4 под Linux.
+#
+# Работает с образами файловой системы в формате raw или sparse.
+#
+# Утилита требует административных прав и перезапускает себя
+# через sudo в случае их отсутствия.
+#
+
+IMG="$1"
+OUT="$2"
+OWNER="$3"
+
+if [ -z "$OUT" ] ; then
+	echo "Распаковывает raw/sparse образ ext4 в указанный каталог"
+	echo "Запуск: $0 [образ ext4] [выходной каталог] {uid:gid}"
+	exit 1
+fi
+
+if [ `id -u` != 0 ]; then
+	# Сценарий работает только от имени администратора
+	exec sudo "$0" "$1" "$2" `id -u`:`id -g`
+fi
+
+set -e
+
+# Если выходного каталога не существует, создаём
+test -d "$OUT" || mkdir -p "$OUT"
+# Путь к другим утилитам
+TOOLS_DIR=$(dirname $(readlink -f $0))
+# Название раздела
+PART=$(basename "$OUT")
+# Файл с сохранёнными uid/gid файлов
+STATS=$(dirname "$OUT")/${PART}_statfile.txt
+
+# Если образ в формате sparse, сперва преобразуем в raw формат
+if file "$IMG" | grep -q "Android sparse image" ; then
+	if ! test -e "${IMG}.raw" || test "$IMG" -nt "${IMG}.raw" ; then
+		echo "Converting sparse image $IMG to raw format ..."
+		$TOOLS_DIR/simg2img "$IMG" "${IMG}.raw"
+	fi
+	IMG="${IMG}.raw"
+fi
+
+TMP=$(mktemp -d ext4.XXXX)
+trap "set +e; umount $TMP &>/dev/null; rmdir $TMP" EXIT
+mount -o loop "$IMG" $TMP
+
+echo "Saving file ownership information to $STATS ..."
+find $TMP | while IFS= read fn ; do
+	test "$fn" = "$TMP" && continue
+	# Удаляем базовый каталог из имени файла, добавляем префикс по имени образа
+	rfn="${PART}/${fn/$TMP\/}"
+	test -z "$rfn" && continue
+	uid_gid=$(stat -c "%u %g" $fn)
+	echo "$rfn $uid_gid -1"
+done > $STATS
+
+echo "Extracting files from $IMG ..."
+cp -dR --preserve=links,xattr $TMP/. "$OUT"/
+
+if test -n "$OWNER" ; then
+	chown $OWNER -R "$OUT"
+	chown $OWNER $STATS
+fi

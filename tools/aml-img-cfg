@@ -1,0 +1,73 @@
+#!/bin/bash
+# Читает image.cfg и выдаёт разную интересную информацию
+
+CFG=$1
+CMD=$2
+shift
+shift
+
+if [ -z "$CFG" ] ; then
+	echo "Выводит запрошенную информацию из файла конфигурации образа UBT"
+	echo "Запуск: $0 [image.cfg] [команда] {аргументы}"
+	echo "	files"
+	echo "		выводит список составных файлов"
+	echo "	type [file1] {...fileN}"
+	echo "		выдаёт тип указанных файлов (normal или sparse)"
+	echo "	type [type1] {...typeN}"
+	echo "		выдаёт список файлов указанного типа"
+	exit 1
+fi
+
+declare -A FILE2TYPE
+declare -A TYPE2FILE
+collect=
+while read -r a b c d ; do
+	case $a in
+		"[LIST_NORMAL]"|"[LIST_VERIFY]")
+			collect=1
+			;;
+		"["*)
+			collect=
+			;;
+		*)
+			[ -z "$collect" ] && continue
+			[ -z "$a" ] && continue
+			file=
+			main_type=
+			sub_type=
+			file_type=
+			[ -n "$a" ] && eval $a
+			[ -n "$b" ] && eval $b
+			[ -n "$c" ] && eval $c
+			[ -n "$d" ] && eval $d
+			FILE2TYPE[$file]=$file_type
+			TYPE2FILE[$file_type]="${TYPE2FILE[$file_type]} $file"
+			;;
+	esac
+done < $CFG
+
+case $CMD in
+	files)
+		echo "${!FILE2TYPE[*]}"
+		exit 0
+		;;
+
+	type)
+		while test -n "$1" ; do
+			if test -n "${FILE2TYPE[$1]}" ; then
+				echo ${FILE2TYPE[$1]}
+			elif test -n "${TYPE2FILE[$1]}"; then
+				echo ${TYPE2FILE[$1]}
+			fi
+			shift
+		done
+		;;
+
+	"")
+		echo "$0: укажите команду"
+		;;
+
+	*)
+		echo "$0: неизвестная команда: $CMD"
+		;;
+esac
