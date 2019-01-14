@@ -16,13 +16,13 @@
 #
 
 NAME="$1"
-UPD=$(readlink -m "$2")
-shift
-shift
+DEV="$2"
+UPD=$(readlink -m "$3")
+shift 3
 FILES=$*
 
 if [ -z "$FILES" ] ; then
-	echo "Запуск: upd-maker [update.zip] [образы разделов...]"
+	echo "Запуск: upd-maker [update.zip] [ro.product.device] [образы разделов...]"
 	exit 1
 fi
 
@@ -36,13 +36,22 @@ echo "Создаём сценарий для update-binary ..."
 rm -rf "$UPD_DIR"
 mkdir -p "$UPD_DIR"
 unzip -q "$DIR/upd-maker-template.zip" -d "$UPD_DIR"
+mkdir "$UPD_DIR/META-INF/com/android"
+echo "pre-device=$DEV" > "$UPD_DIR/META-INF/com/android/metadata"
 
+cat >> "$UPD_SCR" <<EOF
+product=\`cat /*.prop | sed -ne '/ro.product.device *=/{' -e 's/.*=//' -e p -e '}'\`
+if test "\$product" != "$DEV" ; then
+	ui_print "Package is for product $DEV, not for \$product"
+	exit 1
+fi
+EOF
 echo "ui_print \"Installing -=<( $NAME )>=-\"" >> "$UPD_SCR"
 
 for x in $FILES ; do
 	file="$(basename "$x")"
 	part="$(basename $(basename "$x" .PARTITION.raw) .PARTITION)"
-	cp "$x" "$UPD_DIR/$file"
+	test "$UPD_DIR/$file" -ot "$x" && cp -a "$x" "$UPD_DIR/$file"
 	cat >> "$UPD_SCR" <<EOF
 ui_print " - Flashing partition $part"
 if ! package_extract_file $file /dev/block/$part ; then

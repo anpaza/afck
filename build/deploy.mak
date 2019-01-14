@@ -1,5 +1,5 @@
 # Каталог, куда складывается релиз
-DEPLOY.DIR = $(OUT)deploy/$(IMG.VAR)/
+DEPLOY.DIR = $(OUT)deploy/$(VARIANT)/
 
 HELP.ALL += $(call HELPL,deploy,Собрать релиз в каталоге $(DEPLOY.DIR))
 

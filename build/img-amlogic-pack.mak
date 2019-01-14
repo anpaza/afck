@@ -1,14 +1,14 @@
 # Правила сборки прошивочного образа для USB Burning Tool
 #
 # Входные переменные:
-# IMG.VAR  - (опционально) вариант прошивки (4G, 3G и т.п.)
-# IMG.NAME - название формируемой прошивки (не имя файла, только название)
+# VARIANT  - (опционально) вариант прошивки (4G, 3G и т.п.)
+# FIRMNAME - название формируемой прошивки (не имя файла, только название)
 
 # Проверить, что все исходные данные заданы корректно
-$(call ASSERT,$(IMG.NAME),Название целевой прошивки должно быть задано в переменной IMG.NAME!)
+$(call ASSERT,$(FIRMNAME),Название целевой прошивки должно быть задано в переменной FIRMNAME!)
 
 # Генерируемый образ для USB Burning Tool
-UBT.IMG = $(OUT)$(IMG.NAME)-$(VER)-$(subst /,_,$(TARGET))$(if $(IMG.VAR),_$(IMG.VAR)).img
+UBT.IMG = $(OUT)$(FIRMNAME)-$(VER)-$(subst /,_,$(TARGET))$(if $(VARIANT),_$(VARIANT)).img
 # Конечные файлы, из которых собирается прошивка
 UBT.FILES = $(addprefix $(IMG.OUT),$(IMG.COPY) $(IMG.EXT4))
 
@@ -18,7 +18,7 @@ HELP.ALL += $(call HELPL,ubt,Собрать прошивку в формате A
 ubt: $(UBT.IMG)
 
 # Правило сборки выходной прошивки
-$(UBT.IMG): $(UBT.CFG) $(UBT.FILES) $(MOD.DEPS)
+$(UBT.IMG): $(UBT.CFG) $(UBT.FILES) | $(MOD.DEPS)
 	$(TOOLS.DIR)aml_image_v2_packer -r $< $(IMG.OUT) $@
 
 # Правила для файлов прошивки, не требующих модификации (прямое копирование)

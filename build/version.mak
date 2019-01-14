@@ -6,7 +6,7 @@ include $(TARGET.DIR)/img-version.mak
 # Сформируем полный номер версии
 VER = $(strip $(VER.HI)).$(strip $(VER.LO)).$(strip $(VER.REV))
 
-HELP.HDR += Прошивка: $(C.BOLD)$(IMG.NAME)$(C.RST) версия: $(C.BOLD)$(VER)$(C.RST)$(NL)
+HELP.HDR += Прошивка: $(C.BOLD)$(FIRMNAME)$(C.RST) версия: $(C.BOLD)$(VER)$(C.RST)$(NL)
 HELP.ALL += $(call HELPL,help-ver,Цели для манипуляций с номером версии)
 
 HELP.VER += $(call HELPL,ver_next_hi,Увеличить старший номер версии ($(VER.HI) -> $(call ADD,$(VER.HI),1)))

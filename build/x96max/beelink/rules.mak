@@ -1,9 +1,11 @@
 # Название прошивки
-IMG.NAME = volksware
+FIRMNAME = volksware
+# Вариант прошивки, значение по умолчанию
+VARIANT ?= 4G
+# Название аппаратной платформы (ro.product.device)
+PRODEV = u211
 # Название файла базовой прошивки
 IMG.BASE = GT1-mini_114N0.img
-# Вариант прошивки, значение по умолчанию
-IMG.VAR ?= 4G
 
 # Правила для вычисления номера версии
 include build/version.mak

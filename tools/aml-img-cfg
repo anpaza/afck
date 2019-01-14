@@ -3,8 +3,7 @@
 
 CFG=$1
 CMD=$2
-shift
-shift
+shift 2
 
 if [ -z "$CFG" ] ; then
 	echo "Выводит запрошенную информацию из файла конфигурации образа UBT"
