@@ -13,7 +13,7 @@ $(call ASSERT,$(PRODEV),Название устройства (ro.product.device
 UPD.ZIP = $(OUT)update-$(FIRMNAME)-$(VER)-$(subst /,_,$(TARGET))$(if $(VARIANT),_$(VARIANT)).zip
 # Конечные файлы, из которых собирается прошивка
 UPD.FILES = $(addprefix $(IMG.OUT),$(filter $(addsuffix .%,$(UPD.PART)),\
-	$(IMG.COPY) $(addsuffix .raw,$(IMG.EXT4))))
+	$(IMG.COPY) $(IMG.BUILD) $(addsuffix .raw,$(IMG.EXT4))))
 
 HELP.ALL += $(call HELPL,upd,Собрать UPDATE.ZIP для прошивки через Recovery)
 

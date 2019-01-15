@@ -52,13 +52,29 @@ for x in $FILES ; do
 	file="$(basename "$x")"
 	part="$(basename $(basename "$x" .PARTITION.raw) .PARTITION)"
 	test "$UPD_DIR/$file" -ot "$x" && cp -a "$x" "$UPD_DIR/$file"
-	cat >> "$UPD_SCR" <<EOF
+	if [ "$part" == "_aml_dtb" ] ; then
+		# Special case for AMLogic dtb partition
+		cat >> "$UPD_SCR" <<EOF
+ui_print " - Replacing DTB"
+if ! package_extract_file $file \$TMP/dtb ; then
+	ui_print "Failed to extract file $file"
+	exit 1
+fi
+if ! dd if=\$TMP/dtb of=/dev/block/reserved seek=8192 ; then
+	ui_print "Failed to flash DTB"
+	exit 1
+fi
+rm -f \$TMP/dtb
+EOF
+	else
+		cat >> "$UPD_SCR" <<EOF
 ui_print " - Flashing partition $part"
 if ! package_extract_file $file /dev/block/$part ; then
 	ui_print "Failed to extract file $file"
 	exit 1
 fi
 EOF
+	fi
 done
 
 echo "ui_print \"Success!\"" >> "$UPD_SCR"

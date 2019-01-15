@@ -28,7 +28,7 @@ include build/mod.mak
 include build/img-amlogic-pack.mak
 
 # Также мы хотим образ для прошивки через Recovery
-UPD.PART = system vendor boot
+UPD.PART = system vendor boot _aml_dtb
 include build/recovery-pack.mak
 
 # Список файлов, которые попадают в релиз

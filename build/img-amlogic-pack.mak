@@ -10,7 +10,7 @@ $(call ASSERT,$(FIRMNAME),Название целевой прошивки до�
 # Генерируемый образ для USB Burning Tool
 UBT.IMG = $(OUT)$(FIRMNAME)-$(VER)-$(subst /,_,$(TARGET))$(if $(VARIANT),_$(VARIANT)).img
 # Конечные файлы, из которых собирается прошивка
-UBT.FILES = $(addprefix $(IMG.OUT),$(IMG.COPY) $(IMG.EXT4))
+UBT.FILES = $(addprefix $(IMG.OUT),$(IMG.COPY) $(IMG.EXT4) $(IMG.BUILD))
 
 HELP.ALL += $(call HELPL,ubt,Собрать прошивку в формате AmLogic USB Burning Tool)
 
@@ -44,6 +44,7 @@ endef
 $(foreach _,$(IMG.COPY),$(eval $(call IMG.PACK.COPY,$_)))
 # Файлы из IMG.EXT4 запаковываются из распакованного каталога
 $(foreach _,$(IMG.EXT4),$(eval $(call IMG.PACK.EXT4,$_)))
+# Файлы из IMG.BUILD собираются по правилам в самих модах
 
 ifneq ($(FILE_CONTEXTS),)
 

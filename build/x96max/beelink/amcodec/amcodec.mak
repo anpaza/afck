@@ -9,9 +9,6 @@ HELP = Установка libamcodec.so
 $(call IMG.UNPACK.EXT4,system)
 $(call IMG.UNPACK.EXT4,vendor)
 
-# От каких файлов зависит мод, если они меняются, мод заново накладывается
-DEPS += $(wildcard $(DIR)*)
-
 # Команды для установки libamcodec
 define INSTALL =
 	$(call CP,$(DIR)libamcodec.so,$(IMG.OUT)vendor/lib)

@@ -70,8 +70,6 @@ endif
 # Каталог с утилитами для текущей ОС
 TOOLS.DIR = tools/$(HOST.OS)/
 
-# Утилита для извлечения информации из image.cfg
-AML_IMG_CFG = $(shell tools/aml-img-cfg "$1" "$2" "$3")
 # Системно-зависимые утилиты
 include build/rules-$(HOST.OS).mak
 
