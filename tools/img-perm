@@ -1,0 +1,93 @@
+#!/bin/bash
+#
+# Заменитель chmod и secon для изменения прав доступа к файлу
+# в распакованном образе.
+#
+# Права доступа заменяются в файле {название раздела}_statfile.txt.
+# Контекст SELinux заменяется в файле {название раздела}_contexts.
+#
+
+MODE=$1
+SECON=$2
+shift 2
+
+if test -z "$*" ; then
+	echo "Меняет права доступа к файлу в распакованном образе ext4"
+	echo "Запуск: $0 <числовой режим доступа> <контекст SELinux> <файл>"
+	exit 1
+fi
+
+for FILE in $* ; do
+
+	if ! test -e "$FILE" ; then
+		echo "$0: файл $FILE не существует"
+		exit 1
+	fi
+
+	# На всякий случай проставляем права и на самом файле
+	chmod $MODE "$FILE"
+
+	# Идём вверх по иерархии файлов, пока не найдём файл [имя раздела]_statfile.txt
+	FILE=$(readlink -f "$FILE")
+	CUR="$FILE"
+	while true; do
+		DIR=$(dirname "$CUR")
+		PART=$(basename "$CUR")
+		STATS="$DIR/${PART}_statfile.txt"
+		FILCON="$DIR/${PART}_contexts"
+		test -e "$STATS" && break
+
+		if test "$DIR" = "/" ; then
+			echo "$0: не удалось найти файл ${PART}_statfile.txt"
+			exit 1
+		fi
+
+		CUR="$DIR"
+	done
+
+	DIR="$DIR/$PART"
+
+	# Оставить имя файла относительно корня файловой системы
+	FILE="${FILE/${DIR}\/}"
+
+	if ! test -e "$DIR/$FILE" ; then
+		echo "$0: ошибка определения относительного пути $FILE"
+		exit
+	fi
+
+	# Создаём пустой файл, если его нет
+	touch "$STATS"
+
+	awk -v FILE="$PART/$FILE" -v MODE="$MODE" '
+$1 == FILE {
+	print $1" "$2" "$3" "MODE
+	REPLACED="Y"
+	next
+}
+
+{ print }
+
+END {
+	if (REPLACED == "") print FILE" 0 0 "MODE
+}' "$STATS" > "${STATS}.new"
+
+	mv -f "${STATS}.new" "$STATS"
+
+	# Создаём пустой файл, если его нет
+	touch "$FILCON"
+
+	awk -v FILE="/$PART/$FILE" -v SECON="$SECON" '
+$1 == FILE {
+	print $1" "SECON
+	REPLACED="Y"
+	next
+}
+
+{ print }
+
+END {
+	if (REPLACED == "") print FILE" "SECON
+}' "$FILCON" > "${FILCON}.new"
+
+	mv -f "${FILCON}.new" "$FILCON"
+done

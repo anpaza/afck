@@ -13,10 +13,13 @@ include build/version.mak
 # Добавляем правила распаковки исходного образа
 include build/img-amlogic-unpack.mak
 
-# Контексты SELinux имеются прямо в прошивке
-FILE_CONTEXTS += \
+# Контексты SELinux для каждого из ext4 разделов
+FILE_CONTEXTS.vendor = $(IMG.OUT)system/etc/selinux/plat_file_contexts \
+	$(IMG.OUT)vendor/etc/selinux/nonplat_file_contexts \
+	$(IMG.OUT)vendor_contexts
+FILE_CONTEXTS.system = $(IMG.OUT)vendor/etc/selinux/nonplat_file_contexts \
 	$(IMG.OUT)system/etc/selinux/plat_file_contexts \
-	$(IMG.OUT)vendor/etc/selinux/nonplat_file_contexts
+	$(IMG.OUT)system_contexts
 
 # Чтобы эти файлы существовали, надо чтобы соответствующий образ ext4 был распакован
 FILE_CONTEXTS.DEP += $(IMG.OUT).stamp.unpack-system $(IMG.OUT).stamp.unpack-vendor

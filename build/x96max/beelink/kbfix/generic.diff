@@ -1,0 +1,12 @@
+diff -urw vendor.orig/usr/keylayout/Generic.kl vendor/usr/keylayout/Generic.kl
+--- vendor.orig/usr/keylayout/Generic.kl	2019-01-17 23:21:40.530379710 +0300
++++ vendor/usr/keylayout/Generic.kl	2019-01-17 23:22:04.300489875 +0300
+@@ -47,7 +47,7 @@
+ key 25    P
+ key 26    LEFT_BRACKET
+ key 27    RIGHT_BRACKET
+-key 28    DPAD_CENTER
++key 28    ENTER
+ key 29    CTRL_LEFT
+ key 30    A
+ key 31    S

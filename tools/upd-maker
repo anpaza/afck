@@ -2,13 +2,18 @@
 #
 # Утилита для создания пакетов обновления прошивки через Recovery
 #
-# Запуск: upd-maker [name] [update.zip] [образы разделов...]
+# Запуск: upd-maker <имя> <ro.product.device> <update.zip> [образы разделов...]
 #
-# [name] задаёт имя, которое будет высвечиваться во время
-# обновления прошивки.
+# <имя> задаёт имя, которое будет отображаться во время
+# обновления прошивки (название пакета обновления).
+#
+# <ro.product.device> задаёт имя аппаратной платформы, для которой
+# предназначен этот пакет. На текущий момент проверка названия платформы
+# отключена, но это может измениться.
 #
 # Название файла (без расширения) с образом раздела должно быть
-# таким же, как название устройства /dev/block/*.
+# таким же, как название устройства /dev/block/*. Единственное исключение -
+# раздел _aml_dtb, который записывается в /dev/dtb.
 #
 # Образ раздела должен быть ровно в том виде, в котором он записывается
 # в раздел! В частности, sparse ext4 образы должны быть быть
@@ -22,7 +27,7 @@ shift 3
 FILES=$*
 
 if [ -z "$FILES" ] ; then
-	echo "Запуск: upd-maker [update.zip] [ro.product.device] [образы разделов...]"
+	echo "Запуск: upd-maker <имя прошивки> <ro.product.device> <update.zip> <образы разделов...>"
 	exit 1
 fi
 
@@ -39,42 +44,35 @@ unzip -q "$DIR/upd-maker-template.zip" -d "$UPD_DIR"
 mkdir "$UPD_DIR/META-INF/com/android"
 echo "pre-device=$DEV" > "$UPD_DIR/META-INF/com/android/metadata"
 
-cat >> "$UPD_SCR" <<EOF
-product=\`cat /*.prop | sed -ne '/ro.product.device *=/{' -e 's/.*=//' -e p -e '}'\`
-if test "\$product" != "$DEV" ; then
-	ui_print "Package is for product $DEV, not for \$product"
-	exit 1
-fi
-EOF
+# Не проверяем на правильное название платформы...
+# иначе пользователь не сможет откатиться этим пакетом после "чужих" прошивок.
+#cat >> "$UPD_SCR" <<EOF
+#product=\`cat /*.prop | sed -ne '/ro.product.device *=/{' -e 's/.*=//' -e p -e '}'\`
+#if test "\$product" != "$DEV" ; then
+#	ui_print "Package is for product $DEV, not for \$product"
+#	exit 1
+#fi
+#EOF
 echo "ui_print \"Installing -=<( $NAME )>=-\"" >> "$UPD_SCR"
 
 for x in $FILES ; do
 	file="$(basename "$x")"
 	part="$(basename $(basename "$x" .PARTITION.raw) .PARTITION)"
 	test "$UPD_DIR/$file" -ot "$x" && cp -a "$x" "$UPD_DIR/$file"
+	dev="/dev/block/$part"
+	desc="partition $part"
 	if [ "$part" == "_aml_dtb" ] ; then
 		# Special case for AMLogic dtb partition
-		cat >> "$UPD_SCR" <<EOF
-ui_print " - Replacing DTB"
-if ! package_extract_file $file \$TMP/dtb ; then
-	ui_print "Failed to extract file $file"
-	exit 1
-fi
-if ! dd if=\$TMP/dtb of=/dev/block/reserved seek=8192 ; then
-	ui_print "Failed to flash DTB"
-	exit 1
-fi
-rm -f \$TMP/dtb
-EOF
-	else
-		cat >> "$UPD_SCR" <<EOF
-ui_print " - Flashing partition $part"
-if ! package_extract_file $file /dev/block/$part ; then
-	ui_print "Failed to extract file $file"
-	exit 1
-fi
-EOF
+		dev="/dev/dtb"
+		desc="Device Tree"
 	fi
+	cat >> "$UPD_SCR" <<EOF
+ui_print " - Flashing $desc"
+if ! package_extract_file $file $dev ; then
+	ui_print "Failed to extract $file to $dev"
+	exit 1
+fi
+EOF
 done
 
 echo "ui_print \"Success!\"" >> "$UPD_SCR"

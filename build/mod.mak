@@ -8,6 +8,8 @@ define MOD.INCLUDE
 HELP :=
 # Команды для установки мода
 INSTALL :=
+# По умолчанию модуль включён
+DISABLED :=
 
 # Название цели вычисляем по имени каталога
 MOD := $$(basename $$(notdir $1))
@@ -17,9 +19,12 @@ DIR := $$(dir $1)
 STAMP := $$(IMG.OUT).stamp.mod-$$(MOD)
 # Файлы, от которых зависит мод
 DEPS := $$(wildcard $$(DIR)*)
+# Для упрощения, базовый каталог, куда распаковываются разделы
+/ := $(IMG.OUT)
 
 include $1
 
+ifeq ($$(DISABLED),)
 $$(call ASSERT,$$(INSTALL),$$(MOD): Вы должны определить команды в переменной INSTALL)
 HELP.MOD := $$(HELP.MOD)$$(call HELPL,mod-$$(MOD),$$(HELP))
 
@@ -34,10 +39,11 @@ $$(STAMP): $$(DEPS)
 	$$(call TOUCH,$$@)
 
 MOD.DEPS := $(MOD.DEPS) $$(STAMP)
+endif
 endef
 
 # Загрузим все рецепты (патчи, дополнения и т.п.), которые есть для нашей платформы
-$(foreach _,$(wildcard $(TARGET.DIR)*/*.mak),$(eval $(call MOD.INCLUDE,$_)))
+$(foreach _,$(sort $(wildcard $(TARGET.DIR)*/*.mak)),$(eval $(call MOD.INCLUDE,$_)))
 
 .PHONY: mod help-mod
 mod: $(MOD.DEPS)

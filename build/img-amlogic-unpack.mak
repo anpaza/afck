@@ -51,6 +51,7 @@ $$(IMG.OUT).stamp.unpack-$1: $$(IMG.IN)$1.PARTITION
 	$$(call RMDIR,$$(IMG.OUT)$1)
 	$$(call MKDIR,$$(IMG.OUT)$1)
 	$$(call EXT4.UNPACK,$$<,$$(IMG.OUT)$1)
+	$$(call TOUCH,$$(IMG.OUT)$1_contexts)
 	$$(call TOUCH,$$@)
 
 # Исходный образ ext4 зависит от штампа распаковки исходного образа

@@ -7,12 +7,12 @@ shift 2
 
 if [ -z "$CFG" ] ; then
 	echo "Выводит запрошенную информацию из файла конфигурации образа UBT"
-	echo "Запуск: $0 [image.cfg] [команда] {аргументы}"
+	echo "Запуск: $0 <image.cfg> <команда> [аргументы]"
 	echo "	files"
 	echo "		выводит список составных файлов"
-	echo "	type [file1] {...fileN}"
+	echo "	type <file1> [...fileN]"
 	echo "		выдаёт тип указанных файлов (normal или sparse)"
-	echo "	type [type1] {...typeN}"
+	echo "	type <type1> [...typeN]"
 	echo "		выдаёт список файлов указанного типа"
 	exit 1
 fi

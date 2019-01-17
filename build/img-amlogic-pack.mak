@@ -35,8 +35,13 @@ endef
 # Правила для сборки образа ext4
 define IMG.PACK.EXT4
 # Чтобы получить конечный образ ext4, надо запаковать распакованный образ
-$$(IMG.OUT)$1: $$(IMG.IN)$1 $$(IMG.OUT)file_contexts $$(IMG.OUT).stamp.unpack-$(basename $1)
+$$(IMG.OUT)$1: $$(IMG.IN)$1 $$(IMG.OUT)$(basename $1)_contexts.all $$(IMG.OUT).stamp.unpack-$(basename $1)
 	$$(TOOLS.DIR)ext4pack $$(IMG.OUT)$(basename $1) $$@ $$< $$(word 2,$$^)
+
+$$(IMG.OUT)$(basename $1)_contexts.all: $$(FILE_CONTEXTS.$(basename $1))
+	cat $$^ >$$@
+
+$$(FILE_CONTEXTS.$(basename $1)): $$(IMG.OUT).stamp.unpack-$(basename $1)
 
 endef
 
@@ -45,15 +50,3 @@ $(foreach _,$(IMG.COPY),$(eval $(call IMG.PACK.COPY,$_)))
 # Файлы из IMG.EXT4 запаковываются из распакованного каталога
 $(foreach _,$(IMG.EXT4),$(eval $(call IMG.PACK.EXT4,$_)))
 # Файлы из IMG.BUILD собираются по правилам в самих модах
-
-ifneq ($(FILE_CONTEXTS),)
-
-# Файл контекстов для образа собирается путём слива вместе файлов
-# /etc/selinux/(non|)plat_file_contexts из всех распакованных образов.
-# Список файлов для сборки контекстов задаётся в платформо-зависимом файле.
-$(IMG.OUT)file_contexts: $(FILE_CONTEXTS)
-	cat $(wildcard $^) > $@
-
-$(FILE_CONTEXTS): $(FILE_CONTEXTS.DEP)
-
-endif

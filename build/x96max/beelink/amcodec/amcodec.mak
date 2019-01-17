@@ -10,9 +10,9 @@ $(call IMG.UNPACK.EXT4,system)
 $(call IMG.UNPACK.EXT4,vendor)
 
 # Команды для установки libamcodec
-define INSTALL =
-	$(call CP,$(DIR)libamcodec.so,$(IMG.OUT)vendor/lib)
-	tools/img-chmod 0755 $(IMG.OUT)vendor/lib/libamcodec.so
-	grep -q "^libamcodec.so" $(IMG.OUT)system/etc/public.libraries.txt || \
-	$(call FAP,$(IMG.OUT)system/etc/public.libraries.txt,libamcodec.so)
+define INSTALL
+	cp -a $(DIR)libamcodec.so $/vendor/lib
+	tools/img-perm 0755 u:object_r:vendor_file:s0 $/vendor/lib/libamcodec.so
+	grep -q "^libamcodec.so" $/system/etc/public.libraries.txt || \
+	echo "libamcodec.so" >> $/system/etc/public.libraries.txt
 endef
