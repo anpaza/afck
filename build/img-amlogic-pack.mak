@@ -39,7 +39,7 @@ $$(IMG.OUT)$1: $$(IMG.IN)$1 $$(IMG.OUT)$(basename $1)_contexts.all $$(IMG.OUT).s
 	$$(TOOLS.DIR)ext4pack $$(IMG.OUT)$(basename $1) $$@ $$< $$(word 2,$$^)
 
 $$(IMG.OUT)$(basename $1)_contexts.all: $$(FILE_CONTEXTS.$(basename $1))
-	cat $$^ >$$@
+	tools/merge-contexts $$^ >$$@
 
 $$(FILE_CONTEXTS.$(basename $1)): $$(IMG.OUT).stamp.unpack-$(basename $1)
 

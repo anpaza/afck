@@ -1,0 +1,53 @@
+#!/bin/gawk -f
+#
+# Сливает несколько файлов контекстов SELinux в один
+#
+# Запуск: merge-contexts file_context1 file_context2 ... > merged_context
+#
+
+{
+	if (NF == 2) {
+		ft=""
+		fc=$2
+	} else {
+		ft=$2
+		fc=$3
+	}
+
+	secon[$1][0] = ft
+	secon[$1][1] = fc
+}
+
+function secon_sort(i1, v1, i2, v2,    x) {
+	x = length (i1) - length (i2)
+	if (x < 0)
+		return -1
+	if (x > 0)
+		return +1
+	if (i1 < i2)
+		return -1
+	if (i1 > i2)
+		return +1
+	return 0
+}
+
+END {
+	asorti(secon, secon_idx, "secon_sort")
+	for (x in secon_idx) {
+		ntabs = int ((80 - length (secon_idx[x]) + 7) / 8)
+		if (ntabs <= 0)
+			ntabs = 1;
+		idx = secon_idx[x]
+		line = idx
+		while (ntabs > 0) {
+			line = line"\t"
+			ntabs--;
+		}
+		if (secon[idx][0] != "")
+			line = line""secon[idx][0]"\t"
+		else
+			line = line"\t"
+		line = line""secon[idx][1]
+		print line
+	}
+}
