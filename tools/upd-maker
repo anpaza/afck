@@ -2,9 +2,9 @@
 #
 # Утилита для создания пакетов обновления прошивки через Recovery
 #
-# Запуск: upd-maker <имя> <ro.product.device> <update.zip> [образы разделов...]
+# Запуск: upd-maker <название> <ro.product.device> <update.zip> [образы разделов...]
 #
-# <имя> задаёт имя, которое будет отображаться во время
+# <название> задаёт название, которое будет отображаться во время
 # обновления прошивки (название пакета обновления).
 #
 # <ro.product.device> задаёт имя аппаратной платформы, для которой
@@ -27,7 +27,7 @@ shift 3
 FILES=$*
 
 if [ -z "$FILES" ] ; then
-	echo "Запуск: upd-maker <имя прошивки> <ro.product.device> <update.zip> <образы разделов...>"
+	echo "Запуск: upd-maker <название прошивки> <ro.product.device> <update.zip> <образы разделов...>"
 	exit 1
 fi
 
@@ -41,7 +41,7 @@ echo "Создаём сценарий для update-binary ..."
 rm -rf "$UPD_DIR"
 mkdir -p "$UPD_DIR"
 unzip -q "$DIR/upd-maker-template.zip" -d "$UPD_DIR"
-mkdir "$UPD_DIR/META-INF/com/android"
+mkdir -p "$UPD_DIR/META-INF/com/android"
 echo "pre-device=$DEV" > "$UPD_DIR/META-INF/com/android/metadata"
 
 # Не проверяем на правильное название платформы...
@@ -60,7 +60,7 @@ for x in $FILES ; do
 	part="$(basename $(basename "$x" .PARTITION.raw) .PARTITION)"
 	test "$UPD_DIR/$file" -ot "$x" && cp -a "$x" "$UPD_DIR/$file"
 	dev="/dev/block/$part"
-	desc="partition $part"
+	desc="partition '$part'"
 	if [ "$part" == "_aml_dtb" ] ; then
 		# Special case for AMLogic dtb partition
 		dev="/dev/dtb"

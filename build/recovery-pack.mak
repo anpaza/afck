@@ -22,7 +22,7 @@ upd: $(UPD.ZIP)
 
 # Правило сборки выходной прошивки
 $(UPD.ZIP): $(UPD.FILES) | $(MOD.DEPS)
-	tools/upd-maker "$(FIRMNAME)" "$(PRODEV) $(VER)" $@ $^
+	tools/upd-maker "$(FIRMNAME) $(VER)" "$(PRODEV)" $@ $^
 
 # Правило для распаковки sparse образа в raw
 %.PARTITION.raw: %.PARTITION

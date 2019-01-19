@@ -7,25 +7,11 @@
 # Контекст SELinux заменяется в файле {название раздела}_contexts.
 #
 
-MODE=$1
-SECON=$2
-shift 2
-
-if test -z "$*" ; then
-	echo "Меняет права доступа к файлу в распакованном образе ext4"
-	echo "Запуск: $0 <числовой режим доступа> <контекст SELinux> <файл>"
-	exit 1
-fi
-
-for FILE in $* ; do
-
+function file_perm() {
 	if ! test -e "$FILE" ; then
 		echo "$0: файл $FILE не существует"
 		exit 1
 	fi
-
-	# На всякий случай проставляем права и на самом файле
-	chmod $MODE "$FILE"
 
 	# Идём вверх по иерархии файлов, пока не найдём файл [имя раздела]_statfile.txt
 	FILE=$(readlink -f "$FILE")
@@ -46,20 +32,29 @@ for FILE in $* ; do
 	done
 
 	DIR="$DIR/$PART"
-
 	# Оставить имя файла относительно корня файловой системы
 	FILE="${FILE/${DIR}\/}"
 
 	if ! test -e "$DIR/$FILE" ; then
-		echo "$0: ошибка определения относительного пути $FILE"
+		echo "$0: ошибка определения пути $FILE относительно $DIR"
 		exit
 	fi
 
-	# Создаём пустой файл, если его нет
-	touch "$STATS"
+	if test -n "${MODE}${FUID}${FGID}" ; then
+		# Для удобства проставляем права и на самом файле
+		test -n "$MODE" && chmod $MODE "${DIR}/${FILE}"
 
-	awk -v FILE="$PART/$FILE" -v MODE="$MODE" '
+		test -z "$FUID" && FUID=-1
+		test -z "$FGID" && FGID=-1
+		test -z "$MODE" && MODE=-1
+
+		# Создаём пустой файл, если его нет
+		touch "$STATS"
+
+		awk -v FILE="$PART/$FILE" -v MODE="$MODE" -v FUID="$FUID" -v FGID="$FGID" '
 $1 == FILE {
+	if (FUID != -1) $2=FUID
+	if (FGID != -1) $3=FGID
 	print $1" "$2" "$3" "MODE
 	REPLACED="Y"
 	next
@@ -68,15 +63,17 @@ $1 == FILE {
 { print }
 
 END {
-	if (REPLACED == "") print FILE" 0 0 "MODE
+	if (REPLACED == "") print FILE" "FUID" "FGID" "MODE
 }' "$STATS" > "${STATS}.new"
 
-	mv -f "${STATS}.new" "$STATS"
+		mv -f "${STATS}.new" "$STATS"
+	fi
 
-	# Создаём пустой файл, если его нет
-	touch "$FILCON"
+	if test -n "$FILCON" ; then
+		# Создаём пустой файл, если его нет
+		touch "$FILCON"
 
-	awk -v FILE="/$PART/$FILE" -v SECON="$SECON" '
+		awk -v FILE="/$PART/$FILE" -v SECON="$SECON" '
 $1 == FILE {
 	print $1" "SECON
 	REPLACED="Y"
@@ -89,5 +86,55 @@ END {
 	if (REPLACED == "") print FILE" "SECON
 }' "$FILCON" > "${FILCON}.new"
 
-	mv -f "${FILCON}.new" "$FILCON"
+		mv -f "${FILCON}.new" "$FILCON"
+	fi
+}
+
+
+if test -z "$*" ; then
+	echo "Меняет права доступа к файлу в распакованном образе ext4"
+	echo "Запуск: $0 [опции] [файлы ...]"
+	echo ""
+	echo "-b <каталог>  Задать базовый каталог для последующих имён файлов"
+	echo "-u <владелец> Установить идентификатор владельца файлов"
+	echo "-g <группа>   Установить идентификатор группы файлов"
+	echo "-m <режим>    Установить режим доступа к файлам"
+	echo "-c <контекст> Задать контекст безопасности файла"
+	echo "-f <список>   Установить права доступа согласно правилам в файле"
+	echo ""
+	echo "Владелец, группа и режим доступа должны передаваться"
+	echo "в числовом виде."
+	echo ""
+	echo "Файл со списком прав доступа содержит строки в формате:"
+	echo "<имя файла> <владелец> <группа> <права доступа> <контекст безопасности>"
+	echo "Владелец, группа, права доступа могут быть -1 для значений по умолчанию."
+	exit 1
+fi
+
+FUID=
+FGID=
+MODE=
+SECON=
+PERMLIST=
+BASEDIR=
+
+while [ -n "$1" ] ; do
+	case $1 in
+		-u) FUID=$2; shift ;;
+		-g) FGID=$2; shift ;;
+		-m) MODE=$2; shift ;;
+		-c) SECON=$2; shift ;;
+		-f) PERMLIST=$2; shift ;;
+		-b) BASEDIR=$2; shift ;;
+		 *) FILE="${BASEDIR}$1"; file_perm ;;
+	esac
+
+	shift
 done
+
+test -z "$PERMLIST" && exit 0
+
+while read FILE FUID FGID MODE SECON ; do
+	FILE="${BASEDIR}${FILE}"
+	file_perm
+done < "$PERMLIST"

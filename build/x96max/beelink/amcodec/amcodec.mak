@@ -12,7 +12,7 @@ $(call IMG.UNPACK.EXT4,vendor)
 # Команды для установки libamcodec
 define INSTALL
 	cp -a $(DIR)libamcodec.so $/vendor/lib
-	tools/img-perm 0755 u:object_r:vendor_file:s0 $/vendor/lib/libamcodec.so
+	tools/img-perm -m 0755 -c u:object_r:vendor_file:s0 $/vendor/lib/libamcodec.so
 	grep -q "^libamcodec.so" $/system/etc/public.libraries.txt || \
 	echo "libamcodec.so" >> $/system/etc/public.libraries.txt
 endef

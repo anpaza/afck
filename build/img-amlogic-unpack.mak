@@ -11,6 +11,7 @@ IMG.IN = $(OUT)img-unpack/
 # Каталог, где будут формироваться конечные составные части прошивки (boot, system, vendor и т.п.)
 IMG.OUT = $(OUT)img-ubt/
 
+HELP.ALL += $(call HELPL,help-img,Дополнительные команды для работы с образами)
 HELP.ALL += $(call HELPL,img-unpack,Извлечь компоненты из исходного образа)
 
 # Файл с конфигурацией прошивки для USB Burning Tool
@@ -56,6 +57,12 @@ $$(IMG.OUT).stamp.unpack-$1: $$(IMG.IN)$1.PARTITION
 
 # Исходный образ ext4 зависит от штампа распаковки исходного образа
 $$(IMG.IN)$1.PARTITION: $$(IMG.IN).stamp.unpack
+
+HELP.IMG += $$(call HELPL,clean-img-$1,Очистить распакованный образ $1)
+.PHONY: clean-img-$1
+clean-img-$1:
+	rm -f $$(IMG.OUT).stamp.unpack-$1 $$(IMG.OUT)$1_contexts
+	rm -rf $$(IMG.OUT)$1
 endef
 
 # Функция помечает компонент прошивки как собираемый в модах.
@@ -71,3 +78,8 @@ define IMG.WILL.BUILD_
 IMG.BUILD := $$(IMG.BUILD) $$(filter $1.%,$$(IMG.COPY))
 IMG.COPY := $$(filter-out $1.%,$$(IMG.COPY))
 endef
+
+.PHONY: help-img
+help-img:
+	@$(call SAY,$(C.SEP)$-$(C.RST)$(HELP.IMG))
+	@$(call SAY,$(C.SEP)$-$(C.RST))

@@ -1,0 +1,7 @@
+#!/bin/sh
+
+set -e
+
+../tools/upd-maker "vendor-system `date '+%x %X'`" u211 update-vendor-system.zip ../out/x96max/beelink/img-ubt/vendor.PARTITION.raw ../out/x96max/beelink/img-ubt/system.PARTITION.raw
+
+rm -rf update

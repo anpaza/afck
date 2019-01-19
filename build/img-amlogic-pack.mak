@@ -13,6 +13,7 @@ UBT.IMG = $(OUT)$(FIRMNAME)-$(VER)-$(subst /,_,$(TARGET))$(if $(VARIANT),_$(VARI
 UBT.FILES = $(addprefix $(IMG.OUT),$(IMG.COPY) $(IMG.EXT4) $(IMG.BUILD))
 
 HELP.ALL += $(call HELPL,ubt,Собрать прошивку в формате AmLogic USB Burning Tool)
+HELP.ALL += $(call HELPL,help-ubt,Вывести список отдельно собираемых компонент для UBT)
 
 .PHONY: ubt
 ubt: $(UBT.IMG)
@@ -22,9 +23,11 @@ $(UBT.IMG): $(UBT.CFG) $(UBT.FILES) | $(MOD.DEPS)
 	$(TOOLS.DIR)aml_image_v2_packer -r $< $(IMG.OUT) $@
 
 # Правила для файлов прошивки, не требующих модификации (прямое копирование)
+# $1 - название файла компонента прошивки
+# $2 - (опционально) название исходного файла компонента
 define IMG.PACK.COPY
 # Файл в выходном каталоге зависит от файла во входном каталоге
-$$(IMG.OUT)$1: $$(IMG.IN)$1
+$$(IMG.OUT)$1: $$(if $2,$2,$$(IMG.IN)$1)
 	$$(call CP,$$<,$$@)
 
 # Наличие файла во входном каталоге зависит от штампа распаковки исходного образа
@@ -34,9 +37,13 @@ endef
 
 # Правила для сборки образа ext4
 define IMG.PACK.EXT4
+.PHONY: ubt-$(basename $1)
+ubt-$(basename $1): $$(IMG.OUT)$1
+HELP.UBT += $$(call HELPL,ubt-$(basename $1),Собрать $$(IMG.OUT)$1)
+
 # Чтобы получить конечный образ ext4, надо запаковать распакованный образ
-$$(IMG.OUT)$1: $$(IMG.IN)$1 $$(IMG.OUT)$(basename $1)_contexts.all $$(IMG.OUT).stamp.unpack-$(basename $1)
-	$$(TOOLS.DIR)ext4pack $$(IMG.OUT)$(basename $1) $$@ $$< $$(word 2,$$^)
+$$(IMG.OUT)$1: $$(IMG.OUT)$(basename $1)_contexts.all $$(IMG.OUT).stamp.unpack-$(basename $1)
+	$$(TOOLS.DIR)ext4pack $$(IMG.OUT)$(basename $1) $$@ $$(IMG.IN)$1 $$<
 
 $$(IMG.OUT)$(basename $1)_contexts.all: $$(FILE_CONTEXTS.$(basename $1))
 	tools/merge-contexts $$^ >$$@
@@ -50,3 +57,8 @@ $(foreach _,$(IMG.COPY),$(eval $(call IMG.PACK.COPY,$_)))
 # Файлы из IMG.EXT4 запаковываются из распакованного каталога
 $(foreach _,$(IMG.EXT4),$(eval $(call IMG.PACK.EXT4,$_)))
 # Файлы из IMG.BUILD собираются по правилам в самих модах
+
+.PHONY: help-ubt
+help-ubt:
+	@$(call SAY,$(C.SEP)$-$(C.RST)$(HELP.UBT))
+	@$(call SAY,$(C.SEP)$-$(C.RST))
