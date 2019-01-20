@@ -15,7 +15,7 @@ $(call IMG.UNPACK.EXT4,vendor)
 $(call IMG.WILL.BUILD,boot)
 
 # Правило для копирования ядра
-$(IMG.OUT)boot.PARTITION: $(BOOT.IMG)
+$(IMG.OUT)boot.PARTITION: $(BOOT_IMG) | $(IMG.OUT).stamp.dir
 	$(call CP,$<,$@)
 
 define INSTALL

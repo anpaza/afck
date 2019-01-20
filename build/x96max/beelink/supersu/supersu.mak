@@ -2,6 +2,8 @@
 # Установка SuperSU в системном режиме (непосредственно в /system).
 #
 
+# Не работает по непонятным причинам.
+# Даже при "честной" установке через RECOVERY.
 DISABLED = YES
 
 SUPERSU = ingredients/UPDATE-SuperSU-v2.82-*.zip
@@ -15,7 +17,7 @@ $(call IMG.UNPACK.EXT4,system)
 # Команды для установки SuperSU.
 # Рецепт взят из файла META-INF/com/google/android/update-binary
 define INSTALL
-	echo -e "SYSTEMLESS=true\nPATCHBOOTIMAGE=false" >$/system/.supersu
+	echo -e "SYSTEMLESS=false\nPATCHBOOTIMAGE=false" >$/system/.supersu
 
 	mkdir -p $/system/app/SuperSU
 	unzip -qoj $(SUPERSU_ZIP) common/Superuser.apk -d $/system/app/SuperSU
@@ -27,7 +29,7 @@ define INSTALL
 	unzip -qoj $(SUPERSU_ZIP) armv7/su -d $/system/xbin
 
 	mkdir -p $/system/bin/.ext
-	cp -a $/system/xbin/su $/system/bin/.ext/su
+	cp -a $/system/xbin/su $/system/bin/.ext/.su
 
 	cp -a $/system/xbin/su $/system/xbin/daemonsu
 
@@ -45,7 +47,7 @@ define INSTALL
 	mkdir -p $/system/etc/init.d
 	unzip -qoj $(SUPERSU_ZIP) common/99SuperSUDaemon -d $/system/etc/init.d
 
-	tools/img-perm -f $(DIR)supersu.perm -b $/
-
 	touch $/system/etc/.installed_su_daemon
+
+	tools/img-perm -f $(DIR)supersu.perm -b $/
 endef

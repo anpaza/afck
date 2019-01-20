@@ -1,0 +1,47 @@
+#!/bin/bash
+#
+# Создаёт одну или несколько символьных ссылок указанный файл.
+# Созданные ссылки прописываются в соответствующие файлы _statfile.txt.
+#
+
+LINK=
+BASEDIR=
+FORCE=
+
+while [ -n "$1" ] ; do
+	case $1 in
+		-f) FORCE=1; ;;
+		-b) BASEDIR=$2; shift ;;
+		-*) echo "Неизвестная опция $1"; exit 1 ;;
+		 *) LINK=$1; shift; break ;;
+	esac
+
+	shift
+done
+
+if test -z "$LINK" ; then
+	echo "Создаёт одну или несколько ссылок на указанный файл"
+	echo "Запуск: $0 [опции] [ссылка] [файлы-ссылки ...]"
+	echo ""
+	echo "-f           Переписать ссылки, если они уже существуют"
+	echo "-b <каталог> Задать базовый каталог для файлов-ссылок"
+	echo ""
+	echo "Использует утилиту img-perm для установки режима доступа"
+	echo "к созданным ссылкам."
+	exit 1
+fi
+
+# Путь к другим утилитам
+TOOLS_DIR=$(dirname $(readlink -f $0))
+
+set -e
+
+LN_FLAGS=-s
+test -n "$FORCE" && LN_FLAGS="${LN_FLAGS}f"
+
+for FILE in $* ; do
+	ffn=${BASEDIR}${FILE}
+	ln $LN_FLAGS "$LINK" "$ffn"
+done
+
+${TOOLS_DIR}/img-perm -b "$BASEDIR" -m 0777 $*

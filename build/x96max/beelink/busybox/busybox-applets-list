@@ -1,0 +1,14 @@
+#!/sbin/sh
+
+tw=100
+for x in `./busybox --list` ; do
+	xl=`expr length "$x"`
+	tw=`expr $tw + $xl + 1`
+	if test $tw -gt 76 ; then
+		echo ' \'
+		tw=$xl
+	fi
+	echo -n "$x "
+done
+
+echo ""

@@ -1,0 +1,47 @@
+#!/bin/sh
+#
+# Скрипт для создания полного рекурсивного листинга файлов,
+# пригодного для сравнения файловых систем. В листинг заносится:
+# имя файла, тип файла, количество жёстких ссылок/имя ссылки, размер в байтах,
+# владелец, группа, режим доступа, контекст безопасности, хэш-функция
+# от содержимого.
+#
+
+# Для одинаковости выхлопа на любой платформе
+export LANG=C
+
+function list() {
+	for fn in `find "$1" -maxdepth 1` ; do
+		bfn=`basename $fn`
+		test "$bfn" == "." && continue
+		test "$bfn" == ".." && continue
+
+		secon=`ls -dZ "$fn" | awk '{print $1}'`
+
+		if test -L "$fn" ; then
+			link=`readlink "$fn"`
+			stat -c "%n	%F	$link	%s	%u	%g	%f	$secon" "$fn"
+		elif test -d "$fn" ; then
+			test "$fn" == "$1" && continue
+			stat -c "%n	%F	%h	%s	%u	%g	%f	$secon" "$fn"
+		else
+			md5=`md5sum "$fn" | awk '{print $1}'`
+			stat -c "%n	%F	%h	%s	%u	%g	%f	$secon	$md5" "$fn"
+		fi
+	done
+
+	if test -d "$1" ; then
+		for dn in `find "$1" -maxdepth 1 -type d ! -type l` ; do
+			test "$dn" == "$1" && continue
+			bdn=`basename $dn`
+			test "$bdn" == "." && continue
+			test "$bdn" == ".." && continue
+			echo -e "\n-=[$dn ]=-"
+			list "$dn"
+		done
+	fi
+}
+
+for arg in $*; do
+	list "$arg"
+done

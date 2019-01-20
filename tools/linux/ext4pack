@@ -5,15 +5,48 @@
 # просто копирует исходный образ в конечный.
 #
 
-DIR="$1"
-IMG="$2"
-ORIG="$3"
-SECON="$4"
+DIR=
+OUT=
+ORIG=
+SECON=
+TIME=
 
-if test -z "$SECON" ; then
+while test -n "$1" ; do
+	case "$1" in
+		-d) DIR="$2"; shift ;;
+		-o) OUT="$2"; shift ;;
+		-c) SECON="$2"; shift ;;
+		-O) ORIG="$2"; shift ;;
+		-s) SIZE="$2"; shift ;;
+		-t) TIME="$2"; shift ;;
+		-*) echo "Неизвестная опция $1"; exit 1 ;;
+		 *) echo "Непонятно назначение файла $1"; exit 1 ;;
+	esac
+
+	shift
+done
+
+test -z "$TIME" && TIME=$(date '+%s')
+
+if test -z "$SECON" -o -z "$DIR" -o -z "$OUT" ; then
 	echo "Собирает распакованный раздел ext4 обратно в файл образа"
-	echo "Запуск: $0 <каталог> <генерируемый образ> <исходный образ либо размер>"
-	echo "	<контексты файлов>"
+	echo "Запуск: $0 [опции]"
+	echo ""
+	echo "-d <каталог>        Каталог с распакованными файлами"
+	echo "-o <образ>          Задать имя выходного образа"
+	echo "-O <исходный образ> Определить размер выходного образа по размеру оригинала"
+	echo "-s <размер>         Задать напрямую размер выходного образа"
+	echo "-c <контексты>      Брать контексты безопасности из указанного файла"
+	echo "-t <время>          Устанавливать на файлах указанное время"
+	echo ""
+	echo "Файл с контекстами имеет стандартный формат file_contexts."
+	echo ""
+	echo "Время задаётся в формате Unix time. Если время не задано, берётся текущее."
+	echo ""
+	echo "Если размер задаётся по исходному образу, сначала проверяется на существование"
+	echo "такого же файла с расширением .raw; если его нет, берётся размер указанного файла."
+	echo ""
+	echo "Если опция -d не задана, осуществляется простое копирование -O в -o."
 	exit 1
 fi
 
@@ -24,28 +57,30 @@ function cmd() {
 
 # Путь к другим утилитам
 TOOLS_DIR=$(dirname $(readlink -f $0))
-# Выходной каталог
-IMG_OUT=$(dirname "$IMG")
 # Название раздела
-PART=$(basename "$IMG" | cut -f 1 -d '.')
+PART=$(basename "$OUT" | cut -f 1 -d '.')
 # Файл с владельцем и правами доступа
 STATS=$(dirname "$DIR")/${PART}_statfile.txt
 
 # Проверим, был ли распакован исходный образ
-if test -d "$DIR" ; then
+if test -n "$DIR" -a -d "$DIR" ; then
+
 	set -e
 	# Вычислим размер исходной файловой системы
-	if test -e "${ORIG}.raw" ; then
-		SIZE=$(stat -c "%s" "${ORIG}.raw")
-	elif test -e "$ORIG" ; then
-		SIZE=$(stat -c "%s" "$ORIG")
-	else
-		SIZE="$ORIG"
+	if test -z "$SIZE" ; then
+		if test -e "${ORIG}.raw" ; then
+			SIZE=$(stat -c "%s" "${ORIG}.raw")
+		elif test -e "$ORIG" ; then
+			SIZE=$(stat -c "%s" "$ORIG")
+		else
+			echo "$0: файл $ORIG не существует"
+			exit 1
+		fi
 	fi
 
-	rm -f "$IMG"
-	cmd $TOOLS_DIR/make_ext4fs -s -l "$SIZE" -T $(date '+%s') -L "$PART" -a "$PART" \
-		-C "$STATS" -S "$SECON" "$IMG" "$DIR"
+	rm -f "$OUT"
+	cmd $TOOLS_DIR/make_ext4fs -s -l "$SIZE" -T "$TIME" -L "$PART" -a "$PART" \
+		-C "$STATS" -S "$SECON" "$OUT" "$DIR"
 	exit 0
 fi
 
@@ -53,9 +88,9 @@ if test -e "$ORIG" ; then
 	set -e
 	# Копируем исходный распакованный образ в конечный
 	# Чтобы не расходовать место на диске, просто создаём жёсткую ссылку
-	ln "$ORIG" "$IMG"
+	ln "$ORIG" "$OUT"
 	exit 0
 fi
 
-echo "$0: нет ни распакованного, ни запакованного образа для создания $IMG"
+echo "$0: нет ни распакованного, ни запакованного образа для создания $OUT"
 exit 2

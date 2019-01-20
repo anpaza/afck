@@ -15,12 +15,18 @@ UBT.FILES = $(addprefix $(IMG.OUT),$(IMG.COPY) $(IMG.EXT4) $(IMG.BUILD))
 HELP.ALL += $(call HELPL,ubt,Собрать прошивку в формате AmLogic USB Burning Tool)
 HELP.ALL += $(call HELPL,help-ubt,Вывести список отдельно собираемых компонент для UBT)
 
-.PHONY: ubt
+HELP.UBT += $(call HELPL,ubt-img,Собрать все образы$(COMMA) из которых собирается прошивка)
+
+.PHONY: ubt ubt-img
 ubt: $(UBT.IMG)
+ubt-img: $(UBT.FILES)
 
 # Правило сборки выходной прошивки
-$(UBT.IMG): $(UBT.CFG) $(UBT.FILES) | $(MOD.DEPS)
+$(UBT.IMG): $(UBT.CFG) $(UBT.FILES)
 	$(TOOLS.DIR)aml_image_v2_packer -r $< $(IMG.OUT) $@
+
+# Чтобы сделать образы разделов, нужно сначало наложить моды
+$(UBT.FILES): $(MOD.DEPS)
 
 # Правила для файлов прошивки, не требующих модификации (прямое копирование)
 # $1 - название файла компонента прошивки
@@ -43,7 +49,8 @@ HELP.UBT += $$(call HELPL,ubt-$(basename $1),Собрать $$(IMG.OUT)$1)
 
 # Чтобы получить конечный образ ext4, надо запаковать распакованный образ
 $$(IMG.OUT)$1: $$(IMG.OUT)$(basename $1)_contexts.all $$(IMG.OUT).stamp.unpack-$(basename $1)
-	$$(TOOLS.DIR)ext4pack $$(IMG.OUT)$(basename $1) $$@ $$(IMG.IN)$1 $$<
+	$$(TOOLS.DIR)ext4pack -d $$(IMG.OUT)$(basename $1) -o $$@ -c $$< \
+	$$(if $$(EXT4.SIZE.$(basename $1)),-s $$(EXT4.SIZE.$(basename $1)),-O $$(IMG.IN)$1)
 
 $$(IMG.OUT)$(basename $1)_contexts.all: $$(FILE_CONTEXTS.$(basename $1))
 	tools/merge-contexts $$^ >$$@

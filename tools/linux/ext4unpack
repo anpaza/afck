@@ -18,9 +18,9 @@ if [ -z "$OUT" ] ; then
 	exit 1
 fi
 
-if [ `id -u` != 0 ]; then
+if [ $(id -u) != 0 ]; then
 	# Сценарий работает только от имени администратора
-	exec sudo "$0" "$1" "$2" `id -u`:`id -g`
+	exec sudo "$0" "$1" "$2" $(id -u):$(id -g)
 fi
 
 set -e
@@ -35,7 +35,8 @@ PART=$(basename "$OUT")
 STATS=$(dirname "$OUT")/${PART}_statfile.txt
 
 # Если образ в формате sparse, сперва преобразуем в raw формат
-if file "$IMG" | grep -q "Android sparse image" ; then
+read magic < <(od -Anone -N4 -tx1 "${IMG}")
+if test "$magic" == "3a ff 26 ed" ; then
 	if ! test -e "${IMG}.raw" || test "$IMG" -nt "${IMG}.raw" ; then
 		echo "Converting sparse image $IMG to raw format ..."
 		$TOOLS_DIR/simg2img "$IMG" "${IMG}.raw"
@@ -47,18 +48,23 @@ TMP=$(mktemp -d ext4.XXXX)
 trap "set +e; umount $TMP &>/dev/null; rmdir $TMP" EXIT
 mount -o loop "$IMG" $TMP
 
-echo "Saving file ownership information to $STATS ..."
+echo "Сохраняем режимы доступа к файлам в $STATS ..."
 find $TMP | while IFS= read fn ; do
 	test "$fn" = "$TMP" && continue
 	# Удаляем базовый каталог из имени файла, добавляем префикс по имени образа
 	rfn="${PART}/${fn/$TMP\/}"
 	test -z "$rfn" && continue
-	uid_gid=$(stat -c "%u %g" $fn)
-	echo "$rfn $uid_gid -1"
+	uid_gid_mode=$(stat -c "%u %g 0%a" "$fn")
+	caps=$($TOOLS_DIR/getcapn "$fn" 2>/dev/null || true)
+	if test -n "$caps" ; then
+		echo "$rfn $uid_gid_mode capabilities=$caps"
+	else
+		echo "$rfn $uid_gid_mode"
+	fi
 done > $STATS
 
-echo "Extracting files from $IMG ..."
-cp -dR --preserve=links,xattr $TMP/. "$OUT"/
+echo "Извлекаем файлы из $IMG ..."
+cp -dR --preserve=mode,links,xattr $TMP/. "$OUT"/
 
 if test -n "$OWNER" ; then
 	chown $OWNER -R "$OUT"

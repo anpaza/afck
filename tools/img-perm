@@ -8,13 +8,13 @@
 #
 
 function file_perm() {
-	if ! test -e "$FILE" ; then
+	if ! test -e "$FILE" -o -L "$FILE" ; then
 		echo "$0: файл $FILE не существует"
 		exit 1
 	fi
 
 	# Идём вверх по иерархии файлов, пока не найдём файл [имя раздела]_statfile.txt
-	FILE=$(readlink -f "$FILE")
+	FILE=$(realpath -s "$FILE")
 	CUR="$FILE"
 	while true; do
 		DIR=$(dirname "$CUR")
@@ -35,23 +35,23 @@ function file_perm() {
 	# Оставить имя файла относительно корня файловой системы
 	FILE="${FILE/${DIR}\/}"
 
-	if ! test -e "$DIR/$FILE" ; then
+	if ! test -e "$DIR/$FILE" -o -L "$DIR/$FILE" ; then
 		echo "$0: ошибка определения пути $FILE относительно $DIR"
 		exit
 	fi
 
 	if test -n "${MODE}${FUID}${FGID}" ; then
 		# Для удобства проставляем права и на самом файле
-		test -n "$MODE" && chmod $MODE "${DIR}/${FILE}"
+		test -n "$MODE" -a ! -L "${DIR}/${FILE}" && chmod $MODE "${DIR}/${FILE}"
 
-		test -z "$FUID" && FUID=-1
-		test -z "$FGID" && FGID=-1
-		test -z "$MODE" && MODE=-1
+		test -z "$FUID" && _FUID=-1 || _FUID="$FUID"
+		test -z "$FGID" && _FGID=-1 || _FGID="$FGID"
+		test -z "$MODE" && _MODE=-1 || _MODE="$MODE"
 
 		# Создаём пустой файл, если его нет
 		touch "$STATS"
 
-		awk -v FILE="$PART/$FILE" -v MODE="$MODE" -v FUID="$FUID" -v FGID="$FGID" '
+		awk -v FILE="$PART/$FILE" -v MODE="${_MODE}" -v FUID="${_FUID}" -v FGID="${_FGID}" '
 $1 == FILE {
 	if (FUID != -1) $2=FUID
 	if (FGID != -1) $3=FGID
@@ -69,7 +69,7 @@ END {
 		mv -f "${STATS}.new" "$STATS"
 	fi
 
-	if test -n "$FILCON" ; then
+	if test -n "$SECON" ; then
 		# Создаём пустой файл, если его нет
 		touch "$FILCON"
 
@@ -102,8 +102,7 @@ if test -z "$*" ; then
 	echo "-c <контекст> Задать контекст безопасности файла"
 	echo "-f <список>   Установить права доступа согласно правилам в файле"
 	echo ""
-	echo "Владелец, группа и режим доступа должны передаваться"
-	echo "в числовом виде."
+	echo "Владелец, группа и режим доступа должны передаваться в числовом виде."
 	echo ""
 	echo "Файл со списком прав доступа содержит строки в формате:"
 	echo "<имя файла> <владелец> <группа> <права доступа> <контекст безопасности>"
@@ -126,6 +125,7 @@ while [ -n "$1" ] ; do
 		-c) SECON=$2; shift ;;
 		-f) PERMLIST=$2; shift ;;
 		-b) BASEDIR=$2; shift ;;
+		-*) echo "Неизвестная опция $1"; exit 1 ;;
 		 *) FILE="${BASEDIR}$1"; file_perm ;;
 	esac
 

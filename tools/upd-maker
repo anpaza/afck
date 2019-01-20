@@ -2,7 +2,7 @@
 #
 # Утилита для создания пакетов обновления прошивки через Recovery
 #
-# Запуск: upd-maker <название> <ro.product.device> <update.zip> [образы разделов...]
+# Запуск: upd-maker -n <название> -d <ro.product.device> -o <update.zip> [образы разделов...]
 #
 # <название> задаёт название, которое будет отображаться во время
 # обновления прошивки (название пакета обновления).
@@ -20,14 +20,35 @@
 # предварительно распакованы (например, утилитой simg2img)
 #
 
-NAME="$1"
-DEV="$2"
-UPD=$(readlink -m "$3")
-shift 3
-FILES=$*
+NAME="update"
+DEV=
+UPD=
+FILES=
+CMD_START=
+CMD_END=
 
-if [ -z "$FILES" ] ; then
-	echo "Запуск: upd-maker <название прошивки> <ro.product.device> <update.zip> <образы разделов...>"
+while test -n "$1" ; do
+	case $1 in
+		 -n) NAME="$2"; shift ;;
+		 -d) DEV="$2"; shift ;;
+		 -o) UPD=$(readlink -m "$2"); shift ;;
+		-cs) CMD_START="$CMD_START\n$2"; shift ;;
+		-ce) CMD_END="$CMD_END\n$2"; shift ;;
+		 -*) echo "Неизвестная опция $1"; exit 1 ;;
+		  *) break ;;
+	esac
+	shift
+done
+
+FILES=$*
+if test -z "$FILES" -o -z "$UPD" ; then
+	echo "Запуск: upd-maker [опции] -o update.zip [образы разделов...]"
+	echo ""
+	echo "-n <название>   Название пакета обновления (отображается при установке)"
+	echo "-d <устройство> Название целевой платформы (getprop ro.product.device)"
+	echo "-o <update.zip> Выходной файл"
+	echo "-cs <команда>   Добавить команды до прошивки"
+	echo "-ce <команда>   Добавить команды после прошивки"
 	exit 1
 fi
 
@@ -55,6 +76,8 @@ echo "pre-device=$DEV" > "$UPD_DIR/META-INF/com/android/metadata"
 #EOF
 echo "ui_print \"Installing -=<( $NAME )>=-\"" >> "$UPD_SCR"
 
+test -n "$CMD_START" && echo -e "$CMD_START" >> "$UPD_SCR"
+
 for x in $FILES ; do
 	file="$(basename "$x")"
 	part="$(basename $(basename "$x" .PARTITION.raw) .PARTITION)"
@@ -74,6 +97,8 @@ if ! package_extract_file $file $dev ; then
 fi
 EOF
 done
+
+test -n "$CMD_END" && echo -e "$CMD_END" >> "$UPD_SCR"
 
 echo "ui_print \"Success!\"" >> "$UPD_SCR"
 

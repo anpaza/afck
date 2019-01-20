@@ -5,7 +5,12 @@ VARIANT ?= 4G
 # Название аппаратной платформы (ro.product.device)
 PRODEV = u211
 # Название файла базовой прошивки
-IMG.BASE = GT1-mini_114N0.img
+IMG.BASE = GT1-mini_115N0.img
+# В eMMC под /dev/block/vendor выделено 1.1Gb, а образ ФС всего на 256Мб
+EXT4.SIZE.vendor=1174405120
+
+# Добавляем суффикс к каталогу OUT в зависимости от варианта прошивки
+OUT := $(OUT)$(VARIANT)/
 
 # Правила для вычисления номера версии
 include build/version.mak

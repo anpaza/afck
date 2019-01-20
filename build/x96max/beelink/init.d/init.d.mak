@@ -6,6 +6,6 @@ $(call IMG.UNPACK.EXT4,system)
 define INSTALL
 	mkdir $/system/etc/init.d
 	cp $(DIR)init.d.rc $/vendor/etc/init/
-	cp $(DIR)run-init.d $/vendor/xbin/
+	cp $(DIR)run-init.d $/vendor/bin/
 	tools/img-perm -b $/ -f $(DIR)init.d.perm
 endef

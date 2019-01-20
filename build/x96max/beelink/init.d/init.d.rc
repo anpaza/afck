@@ -2,7 +2,7 @@ on post-fs-data
     start init_d
     wait_for_prop sys.init.d
 
-service init_d /vendor/xbin/run-init.d
+service init_d /vendor/bin/run-init.d
     oneshot
     user root
     group shell root
