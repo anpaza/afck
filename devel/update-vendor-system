@@ -12,3 +12,5 @@ make $PART
 
 tools/upd-maker -n "vendor-system `date '+%x %X'`" -d u211 -o update-vendor-system.zip \
 	$PART
+
+rm -rf update
