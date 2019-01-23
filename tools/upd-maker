@@ -79,6 +79,10 @@ echo "ui_print \"Installing -=<( $NAME )>=-\"" >> "$UPD_SCR"
 test -n "$CMD_START" && echo -e "$CMD_START" >> "$UPD_SCR"
 
 for x in $FILES ; do
+	if ! test -e "$x" ; then
+		echo "File $x does not exist" >&2
+		exit 1
+	fi
 	file="$(basename "$x")"
 	part="$(basename $(basename "$x" .PARTITION.raw) .PARTITION)"
 	test "$UPD_DIR/$file" -ot "$x" && cp -a "$x" "$UPD_DIR/$file"

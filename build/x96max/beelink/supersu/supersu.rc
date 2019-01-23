@@ -1,0 +1,8 @@
+on early-boot
+	start daemonsu
+
+service daemonsu /system/xbin/daemonsu --auto-daemon
+	disabled
+	oneshot
+	class core
+	seclabel u:r:init:s0

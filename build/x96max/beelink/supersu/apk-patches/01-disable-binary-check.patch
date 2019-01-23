@@ -1,0 +1,23 @@
+Remove the "SU binary is outdated. Update?" query at startup,
+because after "updating" the box will lock up during next boot.
+
+--- original/smali/eu/chainfire/supersu/Installer.smali	2019-01-22 09:03:04.142804497 +0300
++++ modified/smali/eu/chainfire/supersu/Installer.smali	2019-01-22 02:13:04.953472741 +0300
+@@ -14327,6 +14327,8 @@
+ .method public a()Z
+     .locals 1
+ 
++    goto :cond_1
++
+     iget-boolean v0, p0, Leu/chainfire/supersu/Installer;->l:Z
+ 
+     if-nez v0, :cond_0
+@@ -17377,6 +17379,8 @@
+ .method public b()Z
+     .locals 3
+ 
++    goto :cond_1
++
+     const/4 v2, -0x1
+ 
+     iget v0, p0, Leu/chainfire/supersu/Installer;->a:I

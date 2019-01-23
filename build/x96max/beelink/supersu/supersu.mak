@@ -2,21 +2,46 @@
 # Установка SuperSU в системном режиме (непосредственно в /system).
 #
 
-# Не работает по непонятным причинам.
-# Даже при "честной" установке через RECOVERY.
-DISABLED = YES
-
 SUPERSU = ingredients/UPDATE-SuperSU-v2.82-*.zip
 SUPERSU_ZIP = $(wildcard $(SUPERSU))
 $(call ASSERT,$(SUPERSU_ZIP),Мод SuperSU требует наличия файла $(SUPERSU))
 
 HELP = Установка SuperSU
+DEPS += $(DIR)apk-patches/*
 
 $(call IMG.UNPACK.EXT4,system)
+$(call IMG.UNPACK.EXT4,vendor)
 
 # Команды для установки SuperSU.
-# Рецепт взят из файла META-INF/com/google/android/update-binary
+#
+# В прошивке Beelink уже присутствует демон supersu и команда su.
+# Нам нужно лишь обновить их до последней версии и хакнуть слегонца
+# SuperSU.apk так, чтобы он не проверял "правильность установки", иначе
+# он предлагает "обновить su" и это заканчивается зависанием при загрузке.
 define INSTALL
+	mkdir -p $/system/app/SuperSU
+	unzip -qojp $(SUPERSU_ZIP) common/Superuser.apk > $/system/app/SuperSU/SuperSU.apk
+	# Пропатчим SuperSU
+	$(call APPLY.PATCH.APK,$/system/app/SuperSU/SuperSU.apk,$(DIR)apk-patches)
+	unzip -qoj $(SUPERSU_ZIP) armv7/su -d $/system/xbin
+	rm -f $/system/bin/su
+	cp $(DIR)supersu.rc $/system/etc/init/
+	# Уберём следы "автозапуска" daemonsu от amlogic
+	tools/sed-patch -e '/add root inferface/$(COMMA)/^persist.daemonsu.enable/d' \
+		$/system/build.prop
+	tools/sed-patch -e '/root permission/$(COMMA)/start daemonsu/d' \
+		$/vendor/etc/init/hw/init.amlogic.board.rc
+	tools/img-link -f su $/system/xbin/daemonsu
+	tools/img-perm -f $(DIR)supersu.perm -b $/
+endef
+
+# Рецепт взят из файла META-INF/com/google/android/update-binary
+# для установки SuperSU в SYSTEM режиме (новые версии предпочитают
+# режим SYSTEM-less, когда модифицируется boot.img и сам su устанавливается
+# в образ ext4 /data/su.img, который монтируется на /su).
+#
+# Данный рецепт НЕ ИСПОЛЬЗУЕТСЯ т.к. не работает на x96max.
+define INSTALL___SYSTEM
 	echo -e "SYSTEMLESS=false\nPATCHBOOTIMAGE=false" >$/system/.supersu
 
 	mkdir -p $/system/app/SuperSU
@@ -49,5 +74,5 @@ define INSTALL
 
 	touch $/system/etc/.installed_su_daemon
 
-	tools/img-perm -f $(DIR)supersu.perm -b $/
+	tools/img-perm -f $(DIR)supersu-system.perm -b $/
 endef

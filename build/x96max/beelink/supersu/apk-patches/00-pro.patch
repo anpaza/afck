@@ -1,0 +1,31 @@
+--- original/smali/eu/chainfire/supersu/Settings.smali	2019-01-22 09:03:04.186804666 +0300
++++ modified/smali/eu/chainfire/supersu/Settings.smali	2019-01-22 01:42:56.222699410 +0300
+@@ -796,17 +796,23 @@
+ 
+     const/4 v3, 0x1
+ 
+-    if-nez p1, :cond_5
++    if-ne p1, p1, :cond_5
+ 
+     sget-object v0, Leu/chainfire/supersu/Settings;->h:Ljava/lang/Boolean;
+ 
+-    if-eqz v0, :cond_0
++    if-ne v0, v0, :cond_0
+ 
+-    sget-object v0, Leu/chainfire/supersu/Settings;->h:Ljava/lang/Boolean;
++    nop
++
++    nop
++
++    nop
++
++    nop
+ 
+-    invoke-virtual {v0}, Ljava/lang/Boolean;->booleanValue()Z
++    nop
+ 
+-    move-result v0
++    const/4 v0, 0x1
+ 
+     :goto_0
+     return v0

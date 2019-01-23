@@ -58,9 +58,6 @@ define INSTALL
 
 	# Удаляем ещё какой-то корявый статический busybox
 	rm -f $/system/bin/busybox
-	# И какой-то ненужный Autoreboot.apk
-	rm -f $/system/bin/preinstallApks.sh 
-	rm -rf $/system/usr/trigtop
 
 	unzip -qoj $(BUSYBOX_ZIP) system/xbin/busybox -d $/system/xbin
 	tools/img-link -b $/system/xbin/ busybox $(BUSYBOX_APPLETS)

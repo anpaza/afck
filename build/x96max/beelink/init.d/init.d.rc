@@ -1,4 +1,4 @@
-on post-fs-data
+on early-boot
     start init_d
     wait_for_prop sys.init.d
 

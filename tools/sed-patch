@@ -1,0 +1,44 @@
+#!/bin/sh
+
+function help() {
+	echo "Накладывает один или несколько sed-команд на указанные файлы"
+	echo "Запуск: $0 [опции] [файлы ...]"
+	echo ""
+	echo "-e <команда> Задать команду для SED"
+	echo "-f <файл>    Считать команды для SED из текстового файла"
+	exit 1
+}
+
+function sed_file() {
+	HELP=
+	OK=
+
+	test -z "$SEDFLAGS" && help
+
+	if eval sed "$SEDFLAGS" "$1" > "$1.sedtmp" ; then
+		# Сохраним исходные атрибуты файла
+		cat "$1.sedtmp" > "$1"
+		OK=1
+	fi
+
+	rm -f "$1.sedtmp"
+	test -z "$OK" && exit 1
+}
+
+HELP=yes
+SEDFLAGS=
+
+while [ -n "$1" ] ; do
+	case $1 in
+		-e) SEDFLAGS="${SEDFLAGS} -e '$2'"; shift ;;
+		-f) SEDFLAGS="${SEDFLAGS} -f '$2'"; shift ;;
+		-*) echo "Неизвестная опция $1"; exit 1 ;;
+		 *) sed_file "$1" ;;
+	esac
+
+	shift
+done
+
+test -n "$HELP" && help
+
+exit 0

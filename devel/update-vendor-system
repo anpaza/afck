@@ -2,8 +2,13 @@
 
 set -e
 
-../tools/upd-maker -n "vendor-system `date '+%x %X'`" -d u211 -o update-vendor-system.zip \
-	../out/x96max/beelink/img-ubt/vendor.PARTITION.raw \
-	../out/x96max/beelink/img-ubt/system.PARTITION.raw
+cd ..
 
-rm -rf update
+PART="out/x96max/beelink/4G/img-ubt/vendor.PARTITION.raw \
+      out/x96max/beelink/4G/img-ubt/system.PARTITION.raw"
+
+make ubt-img
+make $PART
+
+tools/upd-maker -n "vendor-system `date '+%x %X'`" -d u211 -o update-vendor-system.zip \
+	$PART

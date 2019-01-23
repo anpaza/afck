@@ -72,13 +72,7 @@ TOOLS.DIR = tools/$(HOST.OS)/
 
 # Системно-зависимые утилиты
 include build/rules-$(HOST.OS).mak
-
-# Наложить патч $1 относительно каталога $2 с дополнительными опциями $3
-define APPLY.PATCH
-	@$(call SAY,$(C.WHITE)Applying patch file $(C.LBLUE)$1$(C.RST))
-	patch $(if $2,-d "$2") $3 <$(if $1,"$1")
-
-endef
+include build/utility.mak
 
 # Проверить условие $1, вывести ошибку $2 если условие непустое
 ASSERT = $(if $(strip $1),,$(error $(C.ERR)$2))
