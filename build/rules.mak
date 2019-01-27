@@ -75,7 +75,7 @@ include build/rules-$(HOST.OS).mak
 include build/utility.mak
 
 # Проверить условие $1, вывести ошибку $2 если условие непустое
-ASSERT = $(if $(strip $1),,$(error $(C.ERR)$2))
+ASSERT = $(if $(strip $1),,$(error $(C.ERR)$2$(C.RST)))
 
 # Общие правила
 include build/common.mak

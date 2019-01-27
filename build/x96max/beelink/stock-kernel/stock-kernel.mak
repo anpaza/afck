@@ -4,8 +4,8 @@
 
 BOOT_IMG = ingredients/x96max-stock-boot-$(VARIANT).img
 BOOT_ZIP = ingredients/x96max-stock-modules.zip
-$(call ASSERT,$(wildcard $(BOOT_IMG)),Файл $(BOOT_IMG) не найден!)
-$(call ASSERT,$(wildcard $(BOOT_ZIP)),Файл $(BOOT_ZIP) не найден!)
+$(call ASSERT.FILE,$(BOOT_IMG))
+$(call ASSERT.FILE,$(BOOT_ZIP))
 
 HELP = Заменить ядро и модули на стоковые
 

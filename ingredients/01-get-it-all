@@ -1,0 +1,45 @@
+#!/bin/sh
+
+WHITE="[1;37m"
+LRED="[1;31m"
+LGREEN="[1;32m"
+RST="[0m"
+
+get() {
+	if test -e "$1" ; then
+		echo "$1: up-to-date"
+		return 0
+	fi
+	echo "$1: ${LGREEN}downloading${RST}"
+	wget -qO "$1" "$2"
+}
+
+get_manual() {
+	if test -e "$1" ; then
+		echo "$1: up-to-date"
+		return 0
+	fi
+	echo -e "${WHITE}$1${LRED}: missing, please download it manually from${RST}"
+	echo "	-> ${LGREEN}$2${RST}"
+}
+
+get_apkpure() {
+	if test -e "$1" ; then
+		echo "$1: up-to-date"
+		return 0
+	fi
+	echo "$1: ${LGREEN}downloading${RST}"
+	url=$(wget -qO- "$2" | sed -ne '/<iframe id="iframe_download"/{' -e 's/.*src="\(.*\)"><\/iframe>/\1/' -e p -e q -e '}')
+	wget -qO "$1" "$url"
+}
+
+get_manual BusyBox.ver.1.29.2.Binary.TB-BB.zip "https://forum.xda-developers.com/devdb/project/?id=20023#downloads"
+get UPDATE-SuperSU-v2.82-20170528234214.zip 'https://download.chainfire.eu/1113/SuperSU/UPDATE-SuperSU-v2.82-20170528234214.zip?retrieve_file=1'
+get SimpleGalleryPro.apk 'https://f-droid.org/repo/com.simplemobiletools.gallery.pro_220.apk'
+
+get_apkpure Backgrounds_HD_Wallpapers.apk "https://apkpure.com/backgrounds-hd-wallpapers/hd.backgrounds.wallpapers.theme/download?from=details"
+get_apkpure Weather.apk 'https://apkpure.com/weather/com.macropinch.swan/download?from=details'
+get_apkpure XAPK_Installer.apk 'https://apkpure.com/xapk-installer/com.apkpure.installer/download/1040-APK?from=versions%2Fversion'
+get_apkpure atv_launcher.apk 'https://apkpure.com/atv-launcher/ca.dstudio.atvlauncher.free/download?from=details'
+get_apkpure TotalCommander.apk 'https://apkpure.com/total-commander-file-manager/com.ghisler.android.TotalCommander/download?from=details'
+get_apkpure PhotoGallery3DHD.apk  'https://apkpure.com/photo-gallery-3d-hd/photo.view.hd.gallery/download?from=details'

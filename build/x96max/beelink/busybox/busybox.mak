@@ -5,7 +5,7 @@
 #
 
 BUSYBOX_ZIP = ingredients/BusyBox.ver.1.29.2.Binary.TB-BB.zip
-$(call ASSERT,$(wildcard $(BUSYBOX_ZIP)),Мод BusyBox требует наличия файла $(BUSYBOX_ZIP))
+$(call ASSERT.FILE,$(BUSYBOX_ZIP))
 
 HELP = Установка BusyBox/ToyBox
 

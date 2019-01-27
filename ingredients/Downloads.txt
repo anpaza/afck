@@ -1,3 +1,5 @@
 Download BusyBox from
-
 https://forum.xda-developers.com/devdb/project/?id=20023#downloads
+
+Download SuperSU from
+https://download.chainfire.eu/1113/SuperSU/

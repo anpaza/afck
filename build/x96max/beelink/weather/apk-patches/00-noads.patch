@@ -1,0 +1,568 @@
+diff -urw Weather_v5.1.3_apkpure.com/apktool.yml "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/apktool.yml"
+Двоичные файлы Weather_v5.1.3_apkpure.com/original/META-INF/CERT.RSA и Погода.v.5.1.3.b.6060131.crk.ADS.Removed/original/META-INF/CERT.RSA различаются
+diff -urw Weather_v5.1.3_apkpure.com/original/META-INF/CERT.SF "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/original/META-INF/CERT.SF"
+diff -urw Weather_v5.1.3_apkpure.com/original/META-INF/MANIFEST.MF "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/original/META-INF/MANIFEST.MF"
+diff -urw Weather_v5.1.3_apkpure.com/smali/com/devuni/ads/AdmobInt.smali "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/devuni/ads/AdmobInt.smali"
+--- Weather_v5.1.3_apkpure.com/smali/com/devuni/ads/AdmobInt.smali	2019-01-26 17:01:54.017957431 +0300
++++ "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/devuni/ads/AdmobInt.smali"	2019-01-26 17:02:10.762035359 +0300
+@@ -146,7 +146,11 @@
+ 
+     move-result-object p1
+ 
+-    invoke-virtual {v0, p1}, Lcom/google/android/gms/ads/InterstitialAd;->loadAd(Lcom/google/android/gms/ads/AdRequest;)V
++    nop
++
++    nop
++
++    nop
+ 
+     return-void
+ .end method
+diff -urw Weather_v5.1.3_apkpure.com/smali/com/devuni/ads/AdmobReward.smali "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/devuni/ads/AdmobReward.smali"
+--- Weather_v5.1.3_apkpure.com/smali/com/devuni/ads/AdmobReward.smali	2019-01-26 17:01:54.020957445 +0300
++++ "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/devuni/ads/AdmobReward.smali"	2019-01-26 17:02:10.759035345 +0300
+@@ -161,7 +161,11 @@
+ 
+     move-result-object p1
+ 
+-    invoke-interface {v0, v1, p1}, Lcom/google/android/gms/ads/reward/RewardedVideoAd;->loadAd(Ljava/lang/String;Lcom/google/android/gms/ads/AdRequest;)V
++    nop
++
++    nop
++
++    nop
+ 
+     return-void
+ .end method
+diff -urw Weather_v5.1.3_apkpure.com/smali/com/devuni/ads/Admob.smali "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/devuni/ads/Admob.smali"
+--- Weather_v5.1.3_apkpure.com/smali/com/devuni/ads/Admob.smali	2019-01-26 17:01:54.016957426 +0300
++++ "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/devuni/ads/Admob.smali"	2019-01-26 17:02:10.752035313 +0300
+@@ -214,7 +214,11 @@
+ 
+     move-result-object v0
+ 
+-    invoke-virtual {p1, v0}, Lcom/google/android/gms/ads/AdView;->loadAd(Lcom/google/android/gms/ads/AdRequest;)V
++    nop
++
++    nop
++
++    nop
+     :try_end_0
+     .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_0} :catch_0
+ 
+diff -urw Weather_v5.1.3_apkpure.com/smali/com/devuni/ads/IntAdsManager.smali "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/devuni/ads/IntAdsManager.smali"
+--- Weather_v5.1.3_apkpure.com/smali/com/devuni/ads/IntAdsManager.smali	2019-01-26 17:01:54.025957468 +0300
++++ "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/devuni/ads/IntAdsManager.smali"	2019-01-26 17:02:10.776035424 +0300
+@@ -345,7 +345,11 @@
+     iput p1, p0, Lcom/devuni/ads/IntAdsManager;->providerIndex:I
+ 
+     .line 297
+-    invoke-virtual {p0}, Lcom/devuni/ads/IntAdsManager;->loadAd()V
++    nop
++
++    nop
++
++    nop
+ 
+     goto :goto_1
+ 
+@@ -568,7 +572,11 @@
+     const/4 v0, 0x0
+ 
+     .line 210
+-    invoke-virtual {p0, v0}, Lcom/devuni/ads/IntAdsManager;->loadAd(Z)V
++    nop
++
++    nop
++
++    nop
+ 
+     return-void
+ .end method
+@@ -898,7 +906,11 @@
+     iput-boolean v1, p0, Lcom/devuni/ads/IntAdsManager;->requestedLoadingWhileConsent:Z
+ 
+     .line 90
+-    invoke-virtual {p0, v2}, Lcom/devuni/ads/IntAdsManager;->loadAd(Z)V
++    nop
++
++    nop
++
++    nop
+ 
+     :cond_4
+     return-void
+diff -urw Weather_v5.1.3_apkpure.com/smali/com/facebook/ads/internal/g/a.smali "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/facebook/ads/internal/g/a.smali"
+--- Weather_v5.1.3_apkpure.com/smali/com/facebook/ads/internal/g/a.smali	2019-01-26 17:01:54.372959083 +0300
++++ "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/facebook/ads/internal/g/a.smali"	2019-01-26 17:02:11.117037011 +0300
+@@ -346,7 +346,7 @@
+ 
+     new-instance v2, Landroid/content/Intent;
+ 
+-    const-string v3, "com.google.android.gms.ads.identifier.service.START"
++    const-string v3, "com.google.android.gms.ads.identifier.service.STARS"
+ 
+     invoke-direct {v2, v3}, Landroid/content/Intent;-><init>(Ljava/lang/String;)V
+ 
+diff -urw Weather_v5.1.3_apkpure.com/smali/com/facebook/ads/internal/u/c.smali "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/facebook/ads/internal/u/c.smali"
+--- Weather_v5.1.3_apkpure.com/smali/com/facebook/ads/internal/u/c.smali	2019-01-26 17:01:54.494959651 +0300
++++ "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/facebook/ads/internal/u/c.smali"	2019-01-26 17:02:11.272037732 +0300
+@@ -108,7 +108,7 @@
+ 
+     if-eqz v0, :cond_0
+ 
+-    const-string p1, "https://graph.facebook.com/network_ads_common"
++    const-string p1, "https://graph.facebook-com/network_ads_common"
+ 
+     goto :goto_0
+ 
+diff -urw Weather_v5.1.3_apkpure.com/smali/com/facebook/ads/internal/w/g/a$a$2$1.smali "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/facebook/ads/internal/w/g/a$a$2$1.smali"
+--- Weather_v5.1.3_apkpure.com/smali/com/facebook/ads/internal/w/g/a$a$2$1.smali	2019-01-26 17:01:54.844961280 +0300
++++ "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/facebook/ads/internal/w/g/a$a$2$1.smali"	2019-01-26 17:02:11.690039678 +0300
+@@ -58,7 +58,7 @@
+ 
+     if-eqz v2, :cond_0
+ 
+-    const-string v1, "https://graph.facebook.com/693953940997901/bugs"
++    const-string v1, "https://graph.facebook-com/693953940997901/bugs"
+ 
+     goto :goto_0
+ 
+diff -urw Weather_v5.1.3_apkpure.com/smali/com/facebook/ads/InterstitialAd.smali "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/facebook/ads/InterstitialAd.smali"
+--- Weather_v5.1.3_apkpure.com/smali/com/facebook/ads/InterstitialAd.smali	2019-01-26 17:01:54.165958120 +0300
++++ "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/facebook/ads/InterstitialAd.smali"	2019-01-26 17:02:10.894035973 +0300
+@@ -124,7 +124,11 @@
+ 
+     sget-object v0, Lcom/facebook/ads/CacheFlag;->ALL:Ljava/util/EnumSet;
+ 
+-    invoke-virtual {p0, v0}, Lcom/facebook/ads/InterstitialAd;->loadAd(Ljava/util/EnumSet;)V
++    nop
++
++    nop
++
++    nop
+ 
+     return-void
+ .end method
+diff -urw Weather_v5.1.3_apkpure.com/smali/com/facebook/ads/NativeAdBase.smali "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/facebook/ads/NativeAdBase.smali"
+--- Weather_v5.1.3_apkpure.com/smali/com/facebook/ads/NativeAdBase.smali	2019-01-26 17:01:54.189958231 +0300
++++ "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/facebook/ads/NativeAdBase.smali"	2019-01-26 17:02:10.925036118 +0300
+@@ -640,7 +640,11 @@
+ 
+     sget-object v0, Lcom/facebook/ads/NativeAdBase$MediaCacheFlag;->ALL:Lcom/facebook/ads/NativeAdBase$MediaCacheFlag;
+ 
+-    invoke-virtual {p0, v0}, Lcom/facebook/ads/NativeAdBase;->loadAd(Lcom/facebook/ads/NativeAdBase$MediaCacheFlag;)V
++    nop
++
++    nop
++
++    nop
+ 
+     return-void
+ .end method
+diff -urw Weather_v5.1.3_apkpure.com/smali/com/google/ads/consent/ConsentInformation.smali "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/google/ads/consent/ConsentInformation.smali"
+--- Weather_v5.1.3_apkpure.com/smali/com/google/ads/consent/ConsentInformation.smali	2019-01-26 17:01:54.874961420 +0300
++++ "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/google/ads/consent/ConsentInformation.smali"	2019-01-26 17:02:11.738039901 +0300
+@@ -17,7 +17,7 @@
+ # static fields
+ .field private static final CONSENT_DATA_KEY:Ljava/lang/String; = "consent_string"
+ 
+-.field private static final MOBILE_ADS_SERVER_URL:Ljava/lang/String; = "https://adservice.google.com/getconfig/pubvendors"
++.field private static final MOBILE_ADS_SERVER_URL:Ljava/lang/String; = "https://adrervice.google.com/getconfig/pubvendors"
+ 
+ .field private static final PREFERENCES_FILE_KEY:Ljava/lang/String; = "mobileads_consent"
+ 
+@@ -1181,7 +1181,7 @@
+ .method public requestConsentInfoUpdate([Ljava/lang/String;Lcom/google/ads/consent/ConsentInfoUpdateListener;)V
+     .locals 1
+ 
+-    const-string v0, "https://adservice.google.com/getconfig/pubvendors"
++    const-string v0, "https://adrervice.google.com/getconfig/pubvendors"
+ 
+     .line 306
+     invoke-virtual {p0, p1, v0, p2}, Lcom/google/ads/consent/ConsentInformation;->requestConsentInfoUpdate([Ljava/lang/String;Ljava/lang/String;Lcom/google/ads/consent/ConsentInfoUpdateListener;)V
+diff -urw Weather_v5.1.3_apkpure.com/smali/com/google/ads/mediation/AbstractAdViewAdapter.smali "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/google/ads/mediation/AbstractAdViewAdapter.smali"
+--- Weather_v5.1.3_apkpure.com/smali/com/google/ads/mediation/AbstractAdViewAdapter.smali	2019-01-26 17:01:54.880961448 +0300
++++ "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/google/ads/mediation/AbstractAdViewAdapter.smali"	2019-01-26 17:02:11.747039943 +0300
+@@ -420,7 +420,11 @@
+     move-result-object p1
+ 
+     .line 114
+-    invoke-virtual {v0, p1}, Lcom/google/android/gms/ads/InterstitialAd;->loadAd(Lcom/google/android/gms/ads/AdRequest;)V
++    nop
++
++    nop
++
++    nop
+ 
+     return-void
+ 
+@@ -597,7 +601,11 @@
+ 
+     move-result-object p1
+ 
+-    invoke-virtual {p2, p1}, Lcom/google/android/gms/ads/AdView;->loadAd(Lcom/google/android/gms/ads/AdRequest;)V
++    nop
++
++    nop
++
++    nop
+ 
+     return-void
+ .end method
+@@ -637,7 +645,11 @@
+ 
+     move-result-object p1
+ 
+-    invoke-virtual {p2, p1}, Lcom/google/android/gms/ads/InterstitialAd;->loadAd(Lcom/google/android/gms/ads/AdRequest;)V
++    nop
++
++    nop
++
++    nop
+ 
+     return-void
+ .end method
+@@ -790,7 +802,11 @@
+ 
+     move-result-object p1
+ 
+-    invoke-virtual {p2, p1}, Lcom/google/android/gms/ads/AdLoader;->loadAd(Lcom/google/android/gms/ads/AdRequest;)V
++    nop
++
++    nop
++
++    nop
+ 
+     return-void
+ .end method
+diff -urw Weather_v5.1.3_apkpure.com/smali/com/google/ads/mediation/facebook/FacebookAdapter.smali "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/google/ads/mediation/facebook/FacebookAdapter.smali"
+--- Weather_v5.1.3_apkpure.com/smali/com/google/ads/mediation/facebook/FacebookAdapter.smali	2019-01-26 17:01:54.915961611 +0300
++++ "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/google/ads/mediation/facebook/FacebookAdapter.smali"	2019-01-26 17:02:11.776040078 +0300
+@@ -646,7 +646,11 @@
+ 
+     const/4 p2, 0x1
+ 
+-    invoke-virtual {p1, p2}, Lcom/facebook/ads/RewardedVideoAd;->loadAd(Z)V
++    nop
++
++    nop
++
++    nop
+ 
+     :goto_0
+     return-void
+@@ -914,7 +918,11 @@
+     .line 228
+     iget-object p1, p0, Lcom/google/ads/mediation/facebook/FacebookAdapter;->mAdView:Lcom/facebook/ads/AdView;
+ 
+-    invoke-virtual {p1}, Lcom/facebook/ads/AdView;->loadAd()V
++    nop
++
++    nop
++
++    nop
+ 
+     return-void
+ .end method
+@@ -1007,7 +1015,11 @@
+     .line 259
+     iget-object p1, p0, Lcom/google/ads/mediation/facebook/FacebookAdapter;->mInterstitialAd:Lcom/facebook/ads/InterstitialAd;
+ 
+-    invoke-virtual {p1}, Lcom/facebook/ads/InterstitialAd;->loadAd()V
++    nop
++
++    nop
++
++    nop
+ 
+     return-void
+ .end method
+@@ -1138,7 +1150,11 @@
+     .line 376
+     iget-object p1, p0, Lcom/google/ads/mediation/facebook/FacebookAdapter;->mNativeAd:Lcom/facebook/ads/NativeAd;
+ 
+-    invoke-virtual {p1}, Lcom/facebook/ads/NativeAd;->loadAd()V
++    nop
++
++    nop
++
++    nop
+ 
+     return-void
+ 
+diff -urw Weather_v5.1.3_apkpure.com/smali/com/google/android/gms/ads/AdView.smali "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/google/android/gms/ads/AdView.smali"
+--- Weather_v5.1.3_apkpure.com/smali/com/google/android/gms/ads/AdView.smali	2019-01-26 17:01:55.611964850 +0300
++++ "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/google/android/gms/ads/AdView.smali"	2019-01-26 17:02:12.581043824 +0300
+@@ -137,7 +137,11 @@
+     .end annotation
+ 
+     .line 18
+-    invoke-super {p0, p1}, Lcom/google/android/gms/ads/BaseAdView;->loadAd(Lcom/google/android/gms/ads/AdRequest;)V
++    nop
++
++    nop
++
++    nop
+ 
+     return-void
+ .end method
+diff -urw Weather_v5.1.3_apkpure.com/smali/com/google/android/gms/ads/identifier/AdvertisingIdClient.smali "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/google/android/gms/ads/identifier/AdvertisingIdClient.smali"
+--- Weather_v5.1.3_apkpure.com/smali/com/google/android/gms/ads/identifier/AdvertisingIdClient.smali	2019-01-26 17:01:55.636964966 +0300
++++ "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/google/android/gms/ads/identifier/AdvertisingIdClient.smali"	2019-01-26 17:02:12.630044052 +0300
+@@ -392,7 +392,7 @@
+     goto :goto_1
+ 
+     :cond_2
+-    const-string p1, "com.google.android.gms.ads.identifier.service.START"
++    const-string p1, "com.google.android.gms.ads.identifier.service.STARS"
+ 
+     :goto_1
+     new-instance v0, Lcom/google/android/gms/common/BlockingServiceConnection;
+diff -urw Weather_v5.1.3_apkpure.com/smali/com/google/android/gms/ads/identifier/zza.smali "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/google/android/gms/ads/identifier/zza.smali"
+--- Weather_v5.1.3_apkpure.com/smali/com/google/android/gms/ads/identifier/zza.smali	2019-01-26 17:01:55.637964971 +0300
++++ "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/google/android/gms/ads/identifier/zza.smali"	2019-01-26 17:02:12.627044038 +0300
+@@ -28,7 +28,7 @@
+ 
+     iget-object v0, p0, Lcom/google/android/gms/ads/identifier/zza;->zzl:Ljava/util/Map;
+ 
+-    const-string v1, "https://pagead2.googlesyndication.com/pagead/gen_204?id=gmob-apps"
++    const-string v1, "https://pagead2.googlesyndication.col/pagead/gen_204?id=gmob-apps"
+ 
+     invoke-static {v1}, Landroid/net/Uri;->parse(Ljava/lang/String;)Landroid/net/Uri;
+ 
+diff -urw Weather_v5.1.3_apkpure.com/smali/com/google/android/gms/ads/internal/zzbm.smali "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/google/android/gms/ads/internal/zzbm.smali"
+--- Weather_v5.1.3_apkpure.com/smali/com/google/android/gms/ads/internal/zzbm.smali	2019-01-26 17:01:55.707965297 +0300
++++ "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/google/android/gms/ads/internal/zzbm.smali"	2019-01-26 17:02:12.716044452 +0300
+@@ -60,7 +60,7 @@
+ 
+     move-result v2
+ 
+-    if-eqz v2, :cond_0
++    if-eq v2, v2, :cond_0
+ 
+     .line 7
+     invoke-virtual {v0, v1}, Lcom/google/android/gms/ads/internal/zza;->zzb(Lcom/google/android/gms/internal/ads/zzwb;)Z
+diff -urw Weather_v5.1.3_apkpure.com/smali/com/google/android/gms/ads/NativeExpressAdView.smali "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/google/android/gms/ads/NativeExpressAdView.smali"
+--- Weather_v5.1.3_apkpure.com/smali/com/google/android/gms/ads/NativeExpressAdView.smali	2019-01-26 17:01:55.609964841 +0300
++++ "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/google/android/gms/ads/NativeExpressAdView.smali"	2019-01-26 17:02:12.587043852 +0300
+@@ -140,7 +140,11 @@
+     .end annotation
+ 
+     .line 18
+-    invoke-super {p0, p1}, Lcom/google/android/gms/ads/BaseAdView;->loadAd(Lcom/google/android/gms/ads/AdRequest;)V
++    nop
++
++    nop
++
++    nop
+ 
+     return-void
+ .end method
+diff -urw Weather_v5.1.3_apkpure.com/smali/com/google/android/gms/internal/ads/zzaan.smali "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/google/android/gms/internal/ads/zzaan.smali"
+--- Weather_v5.1.3_apkpure.com/smali/com/google/android/gms/internal/ads/zzaan.smali	2019-01-26 17:01:56.132967275 +0300
++++ "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/google/android/gms/internal/ads/zzaan.smali"	2019-01-26 17:02:13.219046793 +0300
+@@ -2858,7 +2858,7 @@
+ 
+     const-string v0, "gads:sdk_core_location"
+ 
+-    const-string v2, "https://googleads.g.doubleclick.net/mads/static/mad/sdk/native/sdk-core-v40.html"
++    const-string v2, "https://googleads.g.doubleclick.nes/mads/static/mad/sdk/native/sdk-core-v40.html"
+ 
+     .line 20
+     invoke-static {v1, v0, v2}, Lcom/google/android/gms/internal/ads/zzaac;->zza(ILjava/lang/String;Ljava/lang/String;)Lcom/google/android/gms/internal/ads/zzaac;
+@@ -2869,7 +2869,7 @@
+ 
+     const-string v0, "gads:sdk_core_js_location"
+ 
+-    const-string v2, "https://googleads.g.doubleclick.net/mads/static/mad/sdk/native/production/sdk-core-v40-impl.js"
++    const-string v2, "https://googleads.g.doubleclick.nes/mads/static/mad/sdk/native/production/sdk-core-v40-impl.js"
+ 
+     .line 22
+     invoke-static {v1, v0, v2}, Lcom/google/android/gms/internal/ads/zzaac;->zza(ILjava/lang/String;Ljava/lang/String;)Lcom/google/android/gms/internal/ads/zzaac;
+@@ -3381,7 +3381,7 @@
+ 
+     const-string v0, "gad:mraid:url_banner"
+ 
+-    const-string v9, "https://googleads.g.doubleclick.net/mads/static/mad/sdk/native/mraid/v2/mraid_app_banner.js"
++    const-string v9, "https://googleads.g.doubleclick.nes/mads/static/mad/sdk/native/mraid/v2/mraid_app_banner.js"
+ 
+     .line 114
+     invoke-static {v2, v0, v9}, Lcom/google/android/gms/internal/ads/zzaac;->zza(ILjava/lang/String;Ljava/lang/String;)Lcom/google/android/gms/internal/ads/zzaac;
+@@ -3392,7 +3392,7 @@
+ 
+     const-string v0, "gad:mraid:url_expanded_banner"
+ 
+-    const-string v9, "https://googleads.g.doubleclick.net/mads/static/mad/sdk/native/mraid/v2/mraid_app_expanded_banner.js"
++    const-string v9, "https://googleads.g.doubleclick.nes/mads/static/mad/sdk/native/mraid/v2/mraid_app_expanded_banner.js"
+ 
+     .line 116
+     invoke-static {v2, v0, v9}, Lcom/google/android/gms/internal/ads/zzaac;->zza(ILjava/lang/String;Ljava/lang/String;)Lcom/google/android/gms/internal/ads/zzaac;
+@@ -3403,7 +3403,7 @@
+ 
+     const-string v0, "gad:mraid:url_interstitial"
+ 
+-    const-string v9, "https://googleads.g.doubleclick.net/mads/static/mad/sdk/native/mraid/v2/mraid_app_interstitial.js"
++    const-string v9, "https://googleads.g.doubleclick.nes/mads/static/mad/sdk/native/mraid/v2/mraid_app_interstitial.js"
+ 
+     .line 118
+     invoke-static {v2, v0, v9}, Lcom/google/android/gms/internal/ads/zzaac;->zza(ILjava/lang/String;Ljava/lang/String;)Lcom/google/android/gms/internal/ads/zzaac;
+@@ -3451,7 +3451,7 @@
+ 
+     const-string v0, "gads:sdk_csi_server"
+ 
+-    const-string v9, "https://csi.gstatic.com/csi"
++    const-string v9, "https://csi.gstatic.col/csi"
+ 
+     .line 126
+     invoke-static {v1, v0, v9}, Lcom/google/android/gms/internal/ads/zzaac;->zza(ILjava/lang/String;Ljava/lang/String;)Lcom/google/android/gms/internal/ads/zzaac;
+@@ -4746,7 +4746,7 @@
+ 
+     const-string v0, "gads:native:engine_url_with_protocol"
+ 
+-    const-string v3, "https://googleads.g.doubleclick.net/mads/static/mad/sdk/native/native_ads.html"
++    const-string v3, "https://googleads.g.doubleclick.nes/mads/static/mad/sdk/native/native_ads.html"
+ 
+     .line 346
+     invoke-static {v2, v0, v3}, Lcom/google/android/gms/internal/ads/zzaac;->zza(ILjava/lang/String;Ljava/lang/String;)Lcom/google/android/gms/internal/ads/zzaac;
+@@ -4757,7 +4757,7 @@
+ 
+     const-string v0, "gads:native:engine_js_url_with_protocol"
+ 
+-    const-string v3, "https://googleads.g.doubleclick.net/mads/static/mad/sdk/native/production/native_ads.js"
++    const-string v3, "https://googleads.g.doubleclick.nes/mads/static/mad/sdk/native/production/native_ads.js"
+ 
+     .line 348
+     invoke-static {v1, v0, v3}, Lcom/google/android/gms/internal/ads/zzaac;->zza(ILjava/lang/String;Ljava/lang/String;)Lcom/google/android/gms/internal/ads/zzaac;
+@@ -5360,7 +5360,7 @@
+ 
+     const-string v0, "gads:drx_debug:debug_device_linking_url"
+ 
+-    const-string v3, "https://www.google.com/dfp/linkDevice"
++    const-string v3, "https://www.google.com/dfo/linkDevice"
+ 
+     .line 455
+     invoke-static {v2, v0, v3}, Lcom/google/android/gms/internal/ads/zzaac;->zza(ILjava/lang/String;Ljava/lang/String;)Lcom/google/android/gms/internal/ads/zzaac;
+@@ -5371,7 +5371,7 @@
+ 
+     const-string v0, "gads:drx_debug:in_app_preview_status_url"
+ 
+-    const-string v3, "https://www.google.com/dfp/inAppPreview"
++    const-string v3, "https://www.google.com/dfo/inAppPreview"
+ 
+     .line 457
+     invoke-static {v2, v0, v3}, Lcom/google/android/gms/internal/ads/zzaac;->zza(ILjava/lang/String;Ljava/lang/String;)Lcom/google/android/gms/internal/ads/zzaac;
+@@ -5382,7 +5382,7 @@
+ 
+     const-string v0, "gads:drx_debug:debug_signal_status_url"
+ 
+-    const-string v3, "https://www.google.com/dfp/debugSignals"
++    const-string v3, "https://www.google.com/dfo/debugSignals"
+ 
+     .line 459
+     invoke-static {v2, v0, v3}, Lcom/google/android/gms/internal/ads/zzaac;->zza(ILjava/lang/String;Ljava/lang/String;)Lcom/google/android/gms/internal/ads/zzaac;
+@@ -5393,7 +5393,7 @@
+ 
+     const-string v0, "gads:drx_debug:send_debug_data_url"
+ 
+-    const-string v3, "https://www.google.com/dfp/sendDebugData"
++    const-string v3, "https://www.google.com/dfo/sendDebugData"
+ 
+     .line 461
+     invoke-static {v2, v0, v3}, Lcom/google/android/gms/internal/ads/zzaac;->zza(ILjava/lang/String;Ljava/lang/String;)Lcom/google/android/gms/internal/ads/zzaac;
+diff -urw Weather_v5.1.3_apkpure.com/smali/com/google/android/gms/internal/ads/zzamd.smali "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/google/android/gms/internal/ads/zzamd.smali"
+--- Weather_v5.1.3_apkpure.com/smali/com/google/android/gms/internal/ads/zzamd.smali	2019-01-26 17:01:56.290968010 +0300
++++ "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/google/android/gms/internal/ads/zzamd.smali"	2019-01-26 17:02:13.386047570 +0300
+@@ -2079,7 +2079,11 @@
+     move-result-object p1
+ 
+     .line 180
+-    invoke-interface {v0, v1, p1, v2}, Lcom/google/android/gms/ads/reward/mediation/MediationRewardedVideoAdAdapter;->loadAd(Lcom/google/android/gms/ads/mediation/MediationAdRequest;Landroid/os/Bundle;Landroid/os/Bundle;)V
++    nop
++
++    nop
++
++    nop
+     :try_end_0
+     .catch Ljava/lang/Throwable; {:try_start_0 .. :try_end_0} :catch_0
+ 
+diff -urw Weather_v5.1.3_apkpure.com/smali/com/google/android/gms/internal/ads/zzatq.smali "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/google/android/gms/internal/ads/zzatq.smali"
+--- Weather_v5.1.3_apkpure.com/smali/com/google/android/gms/internal/ads/zzatq.smali	2019-01-26 17:01:56.397968508 +0300
++++ "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/google/android/gms/internal/ads/zzatq.smali"	2019-01-26 17:02:13.514048165 +0300
+@@ -431,7 +431,7 @@
+     .line 67
+     invoke-virtual {v14}, Landroid/net/ConnectivityManager;->getActiveNetworkInfo()Landroid/net/NetworkInfo;
+ 
+-    move-result-object v14
++    const/4 v14, 0x0
+ 
+     if-nez v14, :cond_6
+ 
+diff -urw Weather_v5.1.3_apkpure.com/smali/com/google/android/gms/internal/ads/zzatw.smali "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/google/android/gms/internal/ads/zzatw.smali"
+--- Weather_v5.1.3_apkpure.com/smali/com/google/android/gms/internal/ads/zzatw.smali	2019-01-26 17:01:56.403968536 +0300
++++ "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/google/android/gms/internal/ads/zzatw.smali"	2019-01-26 17:02:13.524048212 +0300
+@@ -1346,7 +1346,7 @@
+ 
+     :cond_11
+     :goto_1
+-    const-string v0, "https://pagead2.googlesyndication.com/pagead/gen_204"
++    const-string v0, "https://pagead2.googlesyndication.col/pagead/gen_204"
+ 
+     .line 148
+     invoke-static {v0}, Landroid/net/Uri;->parse(Ljava/lang/String;)Landroid/net/Uri;
+diff -urw Weather_v5.1.3_apkpure.com/smali/com/google/android/gms/internal/ads/zzaua.smali "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/google/android/gms/internal/ads/zzaua.smali"
+--- Weather_v5.1.3_apkpure.com/smali/com/google/android/gms/internal/ads/zzaua.smali	2019-01-26 17:01:56.409968564 +0300
++++ "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/google/android/gms/internal/ads/zzaua.smali"	2019-01-26 17:02:13.529048235 +0300
+@@ -630,7 +630,7 @@
+     .line 79
+     invoke-virtual {v1}, Landroid/net/ConnectivityManager;->getActiveNetworkInfo()Landroid/net/NetworkInfo;
+ 
+-    move-result-object p1
++    const/4 p1, 0x0
+ 
+     if-eqz p1, :cond_0
+ 
+diff -urw Weather_v5.1.3_apkpure.com/smali/com/google/android/gms/internal/ads/zzazl.smali "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/google/android/gms/internal/ads/zzazl.smali"
+--- Weather_v5.1.3_apkpure.com/smali/com/google/android/gms/internal/ads/zzazl.smali	2019-01-26 17:01:56.481968899 +0300
++++ "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/google/android/gms/internal/ads/zzazl.smali"	2019-01-26 17:02:13.627048691 +0300
+@@ -33,7 +33,7 @@
+ 
+     iget-object p1, p1, Lcom/google/android/gms/internal/ads/zzazk;->val$context:Landroid/content/Context;
+ 
+-    const-string p2, "https://support.google.com/dfp_premium/answer/7160685#push"
++    const-string p2, "https://support.google.com/dfo_premium/answer/7160685#push"
+ 
+     .line 3
+     invoke-static {p2}, Landroid/net/Uri;->parse(Ljava/lang/String;)Landroid/net/Uri;
+diff -urw Weather_v5.1.3_apkpure.com/smali/com/macropinch/swan/utils/WeatherIntAdsManager.smali "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/macropinch/swan/utils/WeatherIntAdsManager.smali"
+--- Weather_v5.1.3_apkpure.com/smali/com/macropinch/swan/utils/WeatherIntAdsManager.smali	2019-01-26 17:01:58.582978678 +0300
++++ "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/macropinch/swan/utils/WeatherIntAdsManager.smali"	2019-01-26 17:02:15.855059059 +0300
+@@ -88,7 +88,11 @@
+ 
+     .line 38
+     :cond_0
+-    invoke-super {p0}, Lcom/devuni/ads/IntAdsManager;->loadAd()V
++    nop
++
++    nop
++
++    nop
+ 
+     :goto_0
+     return-void
+diff -urw Weather_v5.1.3_apkpure.com/smali/com/macropinch/swan/WeatherActivity2.smali "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/macropinch/swan/WeatherActivity2.smali"
+--- Weather_v5.1.3_apkpure.com/smali/com/macropinch/swan/WeatherActivity2.smali	2019-01-26 17:01:58.423977938 +0300
++++ "\320\237\320\276\320\263\320\276\320\264\320\260.v.5.1.3.b.6060131.crk.ADS.Removed/smali/com/macropinch/swan/WeatherActivity2.smali"	2019-01-26 17:02:15.664058170 +0300
+@@ -1521,7 +1521,11 @@
+     .line 1183
+     iget-object v0, p0, Lcom/macropinch/swan/WeatherActivity2;->intAdsManager:Lcom/macropinch/swan/utils/WeatherIntAdsManager;
+ 
+-    invoke-virtual {v0}, Lcom/macropinch/swan/utils/WeatherIntAdsManager;->loadAd()V
++    nop
++
++    nop
++
++    nop
+ 
+     .line 1185
+     iget-boolean v0, p0, Lcom/macropinch/swan/WeatherActivity2;->intAdsFailed:Z

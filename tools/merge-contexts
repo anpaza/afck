@@ -21,8 +21,10 @@ BEGIN {
 	}
 
 	if ($1 in secon) {
-		print "Контекст "$1" определён несколько раз!" > "/dev/stderr"
-		print "	-> было "secon[$1][1]", стало "fc > "/dev/stderr"
+		if (secon[$1][1] != fc) {
+			print "Контекст "$1" определён несколько раз!" > "/dev/stderr"
+			print "	-> было "secon[$1][1]", стало "fc > "/dev/stderr"
+		}
 		idx = secon[$1][2]
 	} else {
 		idx = count

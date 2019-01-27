@@ -1,0 +1,15 @@
+#!/bin/sh
+
+set -e
+
+cd ..
+
+PART="out/x96max/beelink/4G/img-ubt/_aml_dtb.PARTITION"
+
+make ubt-img
+make $PART
+
+tools/upd-maker -n "dtb `date '+%x %X'`" -d u211 -o update-dtb.zip \
+	$PART
+
+rm -rf update

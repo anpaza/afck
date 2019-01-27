@@ -27,6 +27,8 @@ endif
 C.SEP = $(C.DGRAY)
 # Заголовки
 C.HEAD = $(C.LGREEN)
+# "Подчёркнутый" текст
+C.EMPH = $(C.LBLUE)
 # "Выделенный" текст
 C.BOLD = $(C.WHITE)
 # Текст сообщения об ошибке

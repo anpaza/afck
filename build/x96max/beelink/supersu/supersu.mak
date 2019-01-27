@@ -2,9 +2,8 @@
 # Установка SuperSU в системном режиме (непосредственно в /system).
 #
 
-SUPERSU = ingredients/UPDATE-SuperSU-v2.82-*.zip
-SUPERSU_ZIP = $(wildcard $(SUPERSU))
-$(call ASSERT,$(SUPERSU_ZIP),Мод SuperSU требует наличия файла $(SUPERSU))
+SUPERSU_ZIP = ingredients/UPDATE-SuperSU-v2.82-20170528234214.zip
+$(call ASSERT.FILE,$(SUPERSU_ZIP))
 
 HELP = Установка SuperSU
 DEPS += $(DIR)apk-patches/*

@@ -84,7 +84,7 @@ for x in $FILES ; do
 		exit 1
 	fi
 	file="$(basename "$x")"
-	part="$(basename $(basename "$x" .PARTITION.raw) .PARTITION)"
+	part="$(echo "$x" | sed -e 's/\..*//')"
 	test "$UPD_DIR/$file" -ot "$x" && cp -a "$x" "$UPD_DIR/$file"
 	dev="/dev/block/$part"
 	desc="partition '$part'"
