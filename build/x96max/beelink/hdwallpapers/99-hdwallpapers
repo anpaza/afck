@@ -1,0 +1,11 @@
+#!/system/bin/sh
+
+mkdir -p /data/preinst
+test -e /data/preinst/hdwallpapers.1 && exit 0
+
+set -e
+
+mkdir -p /sdcard/Pictures/Wallpapers
+cp -a /vendor/app/Backgrounds_HD_Wallpapers/Wallpapers/* /sdcard/Pictures/Wallpapers/
+
+date > /data/preinst/hdwallpapers.1

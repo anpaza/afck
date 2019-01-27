@@ -23,7 +23,7 @@ endef
 
 # Проверить наличие файла $1, если нет - выводится ошибка
 define ASSERT.FILE
-$(call ASSERT,$(wildcard $1),$(if $(MOD),Для мода $(C.EMPH)$(MOD)$(C.ERR) )требуется файл '$(C.BOLD)$1$(C.ERR)')
+$(call ASSERT,$(wildcard $1),$(if $(MOD),Для мода $(C.EMPH)$(MOD)$(C.ERR) н,Н)еобходим файл '$(C.BOLD)$1$(C.ERR)')
 endef
 
 # Установка APK в прошивку
@@ -47,5 +47,6 @@ define INSTALL
 	cp ingredients/$2 $/$1/app/$(basename $2)/$2
 	tools/img-perm -m 0755 -c $(MOD.APK.CON.$1) $/$1/app/$(basename $2)
 	tools/img-perm -m 0644 -c $(MOD.APK.CON.$1) $/$1/app/$(basename $2)/$2
+
 endef
 endef

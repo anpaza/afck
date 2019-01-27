@@ -12,7 +12,7 @@ function busy_mark() {
 	MARK=$RANDOM
 	while true ; do
 		while test -e "$BUSY" ; do
-			usleep 200000
+			sleep 0.2
 		done
 		echo $MARK > "$BUSY"
 		m=$(cat "$BUSY")

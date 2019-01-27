@@ -28,9 +28,14 @@ get_apkpure() {
 		echo "$1: up-to-date"
 		return 0
 	fi
-	echo "$1: ${LGREEN}downloading${RST}"
+	echo -n "$1: ${LGREEN}downloading${RST} ..."
 	url=$(wget -qO- "$2" | sed -ne '/<iframe id="iframe_download"/{' -e 's/.*src="\(.*\)"><\/iframe>/\1/' -e p -e q -e '}')
-	wget -qO "$1" "$url"
+	if wget -qO "$1" "$url" ; then
+		echo "${WHITE}OK${RST}"
+	else
+		echo "${LRED}FAILED${RST}"
+		rm -f "$2"
+	fi
 }
 
 get_manual BusyBox.ver.1.29.2.Binary.TB-BB.zip "https://forum.xda-developers.com/devdb/project/?id=20023#downloads"

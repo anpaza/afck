@@ -1,0 +1,92 @@
+#!/bin/bash
+#
+# Устанавливает свойство (property) в файле формата .prop.
+#
+
+function busy_mark() {
+	BUSY=$1.busy
+	MARK=$RANDOM
+	while true ; do
+		while test -e "$BUSY" ; do
+			sleep 0.2
+		done
+		echo $MARK > "$BUSY"
+		m=$(cat "$BUSY")
+		test "$m" == "$MARK" && return 0
+	done
+}
+
+function busy_unmark() {
+	BUSY=$1.busy
+	rm -f "$BUSY"
+}
+
+function help() {
+	echo "Добавляет/замещает свойство в указанном файле формата .prop"
+	echo "Запуск: $0 [опции] [свойство=значение ...]"
+	echo ""
+	echo "-f <файл>  Задаёт файл, в котором редактируются свойства"
+	echo ""
+	echo "Имейте в виду, если указанное свойство задано в другом .prop"
+	echo "файле, после добавления нового значения в системе свойство"
+	echo "будет иметь два значения 'новое,старое'."
+	echo ""
+	echo "Если значение пусто, свойство будет удалено из указанного файла."
+	exit 1
+}
+
+function set_prop() {
+	if test -z "$FILE" ; then
+		echo "$0: Не задано имя файла"
+		echo ""
+		help
+	fi
+
+	prop=$(echo "$1" | sed -e "s/[[:space:]]*=.*//")
+	val=$(echo "$1" | sed -e "s/.*=[[:space:]]*//")
+	tmp=$(mktemp)
+
+	awk -v PROP="$prop" -v VAL="$val" '
+BEGIN {
+	propex = "^[[:space:]]*"PROP"[[:space:]]*="
+	replaced = 0
+}
+
+$0 ~ propex {
+	if (VAL != "")
+		print PROP"="VAL
+	replaced = 1
+	next
+}
+
+{ print }
+
+END {
+	if (replaced == 0)
+		print PROP"="VAL
+}
+' $FILE > "$tmp"
+	if cmp -s "$tmp" "$FILE" ; then
+		echo "$prop is already '$val' in $FILE"
+		rm -f "$tmp"
+	else
+		mv -f "$tmp" "$FILE"
+	fi
+}
+
+FILE=
+DONE=
+
+while [ -n "$1" ] ; do
+	case $1 in
+		-f) FILE=$2; shift ;;
+		-*) echo "Неизвестная опция $1"; exit 1 ;;
+		 *) DONE=1; set_prop "$1"; shift ;;
+	esac
+
+	shift
+done
+
+test -z "$DONE" && help
+
+exit 0

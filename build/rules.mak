@@ -49,6 +49,9 @@ LOWCASE = $(shell echo '$1' | tr A-Z a-z)
 ADD = $(shell expr '$1' + '$2')
 # Линия разделителя -- $- :-)
 -=------------------------------------------------------------------------
+# Текущая дата и время
+DATE = $(shell date +%x)
+TIME = $(shell date +%X)
 
 # ---------- # Каталоги и утилиты # ---------- #
 
@@ -72,6 +75,7 @@ TOOLS.DIR = tools/$(HOST.OS)/
 
 # Системно-зависимые утилиты
 include build/rules-$(HOST.OS).mak
+# Просто полезные функции
 include build/utility.mak
 
 # Проверить условие $1, вывести ошибку $2 если условие непустое
@@ -81,7 +85,5 @@ ASSERT = $(if $(strip $1),,$(error $(C.ERR)$2$(C.RST)))
 include build/common.mak
 
 # Правила для целевой платформы
-ifeq ($(wildcard $(TARGET.DIR)rules.mak),)
-$(error $(C.ERR)Файл с правилами для целевой платформы $(TARGET.DIR)rules.mak не существует!)
-endif
+$(call ASSERT.FILE,$(TARGET.DIR)rules.mak)
 include $(TARGET.DIR)rules.mak
