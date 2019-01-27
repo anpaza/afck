@@ -7,6 +7,24 @@
 # Контекст SELinux заменяется в файле {название раздела}_contexts.
 #
 
+function busy_mark() {
+	BUSY=$1.busy
+	MARK=$RANDOM
+	while true ; do
+		while test -e "$BUSY" ; do
+			usleep 200000
+		done
+		echo $MARK > "$BUSY"
+		m=$(cat "$BUSY")
+		test "$m" == "$MARK" && return 0
+	done
+}
+
+function busy_unmark() {
+	BUSY=$1.busy
+	rm -f "$BUSY"
+}
+
 function file_perm() {
 	if ! test -e "$FILE" -o -L "$FILE" ; then
 		echo "$0: файл $FILE не существует"
@@ -48,6 +66,8 @@ function file_perm() {
 		test -z "$FGID" && _FGID=-1 || _FGID="$FGID"
 		test -z "$MODE" && _MODE=-1 || _MODE="$MODE"
 
+		busy_mark "$STATS"
+
 		# Создаём пустой файл, если его нет
 		touch "$STATS"
 
@@ -67,9 +87,13 @@ END {
 }' "$STATS" > "${STATS}.new"
 
 		mv -f "${STATS}.new" "$STATS"
+
+		busy_unmark "$STATS"
 	fi
 
 	if test -n "$SECON" ; then
+		busy_mark "$FILCON"
+
 		# Создаём пустой файл, если его нет
 		touch "$FILCON"
 
@@ -87,6 +111,8 @@ END {
 }' "$FILCON" > "${FILCON}.new"
 
 		mv -f "${FILCON}.new" "$FILCON"
+
+		busy_unmark "$FILCON"
 	fi
 }
 
