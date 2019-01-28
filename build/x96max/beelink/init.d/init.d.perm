@@ -1,3 +1,4 @@
 system/etc/init.d		0	0	0755	u:object_r:system_file:s0
+vendor/etc/init.d		0	0	0755	u:object_r:vendor_configs_file:s0
 vendor/etc/init/init.d.rc	0	0	0644	u:object_r:vendor_configs_file:s0
 vendor/bin/run-init.d		0	2000	0755	u:object_r:vendor_file:s0
