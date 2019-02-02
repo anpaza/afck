@@ -41,6 +41,7 @@ get_apkpure() {
 get_manual BusyBox.ver.1.29.2.Binary.TB-BB.zip "https://forum.xda-developers.com/devdb/project/?id=20023#downloads"
 get UPDATE-SuperSU-v2.82-20170528234214.zip 'https://download.chainfire.eu/1113/SuperSU/UPDATE-SuperSU-v2.82-20170528234214.zip?retrieve_file=1'
 get SimpleGalleryPro.apk 'https://f-droid.org/repo/com.simplemobiletools.gallery.pro_220.apk'
+get open_gapps-tvstock.zip 'https://github.com/opengapps/arm/releases/download/20190127/open_gapps-arm-8.1-tvstock-20190127.zip'
 
 get_apkpure Backgrounds_HD_Wallpapers.apk "https://apkpure.com/backgrounds-hd-wallpapers/hd.backgrounds.wallpapers.theme/download?from=details"
 get_apkpure Weather.apk 'https://apkpure.com/weather/com.macropinch.swan/download?from=details'

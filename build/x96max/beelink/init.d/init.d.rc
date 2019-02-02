@@ -1,6 +1,5 @@
-on early-boot
+on property:dev.bootcomplete=1
     start init_d
-    wait_for_prop sys.init.d
 
 service init_d /vendor/bin/run-init.d
     oneshot

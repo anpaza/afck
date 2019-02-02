@@ -1,0 +1,5 @@
+#!/bin/sh
+
+ZIP=../../tools/upd-maker-template.zip
+rm -f $ZIP
+zip -r $ZIP META-INF

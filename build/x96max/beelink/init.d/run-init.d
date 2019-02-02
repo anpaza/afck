@@ -1,10 +1,9 @@
 #!/system/bin/sh
 
-test `getprop sys.init.d` != "" && exit 0
-
-set -e
+test -n "`getprop init.svc.initd`" && exit 0
+setprop init.svc.initd running
 
 run-parts /vendor/etc/init.d/
 run-parts /system/etc/init.d/
 
-setprop sys.init.d 1
+setprop init.svc.initd stopped

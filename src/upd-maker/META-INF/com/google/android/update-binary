@@ -1,0 +1,202 @@
+#!/sbin/sh
+
+# Ensure the environment is sane... too often it is not
+export PATH=/bin:/sbin:$TMP/busybox
+busybox mkdir -p $TMP/busybox &>/dev/null && \
+	busybox --install -s $TMP/busybox
+
+# Check if we have some fstab
+test -e /etc/fstab || ( test -e /etc/recovery.fstab && ln /etc/recovery.fstab /etc/fstab )
+# Now we can just do "mount /cache", "mount /vendor", "mount /system" etc
+
+export UPD_API="$1"
+export UPD_FD="/proc/self/fd/$2"
+export UPD_ZIP="$3"
+export TMP=/tmp
+export SCRIPT=$0
+export UPD_DIR=`dirname "$UPD_ZIP"`
+
+atexit() {
+	SCRIPT=$0
+
+	test -d "$TMP/busybox" || return 0
+
+	ui_print "Copying recovery.log to source media"
+	cp $TMP/recovery.log $UPD_DIR
+	sync
+
+	# Unmount partitions left mounted by user script, if any
+	for x in /vendor /system /odm /cache /data ; do
+		grep -q " $x " /proc/mounts && umount $x
+	done
+
+	rm -rf $TMP/busybox
+
+	return 0
+}
+
+aterr() {
+	set +e
+	ui_print "Failed at $2:$1"
+	atexit
+}
+
+# Display error string on failure
+trap "aterr \$LINENO \$SCRIPT" ERR
+# At exit, copy recovery.log to sticard
+trap "atexit" EXIT
+
+echo "\
+UPD_API: $UPD_API
+UPD_FD:  $UPD_FD
+UPD_ZIP: $UPD_ZIP
+TMP:     $TMP"
+
+set -o pipefail
+
+ui_print() {
+	# Duplicate to stdout, so that it gets into recovery.log
+	echo "$*"
+	# Also to console
+	echo "$*" > /dev/console
+	# And, of course, to recovery console
+	test -n "$UPD_FD" && echo "ui_print $*" >$UPD_FD
+}
+
+progress() {
+	if [ $# != 2 ]; then
+		ui_print "$0 expects 2 args, got $#"
+		ui_print "usage: $0 <fraction> <duration>"
+		exit 1
+	else
+		echo "progress $1 $2" >$UPD_FD
+	fi
+}
+
+show_progress() {
+	progress $@
+}
+
+set_progress() {
+	if [ $# != 1 ]; then
+		ui_print "$0 expects 1 args, got $#"
+		ui_print "usage: $0 <fraction>"
+		exit 1
+	else
+		echo "set_progress $1" >$UPD_FD
+	fi
+}
+
+package_extract_file() {
+	if [ $# != 2 ]; then
+		ui_print "$0 expects 2 args, got $#"
+		ui_print "usage: $0 <src-file> <dst-dir|dst-file>"
+		exit 1
+	else
+		DEST="$2"
+		test -d "$DEST" && DEST="$2/`basename $1`"
+		if ! unzip -p $UPD_ZIP "$1" > $DEST ; then
+			ui_print "Failed to unzip file \"$1\""
+			exit 1
+		fi
+	fi
+}
+
+package_extract_folder() {
+	if [ $# != 2 ]; then
+		ui_print "$0 expects 2 args, got $#"; echo "usage: $0 <src-dir> <dst-dir>"
+		exit 1
+	else
+		mkdir -p "$2"
+		if ! unzip $UPD_ZIP "$1/*" -d "$2" ; then
+			ui_print "Failed to unzip folder \"$1\""
+			exit 1
+		fi
+	fi
+}
+
+set_perm() {
+	if [ $# != 2 ]; then
+		ui_print "$0 expects 4 args, got $#"
+		ui_print "usage: $0 <uid> <gid> <mode> <pathtofile>[, ... pathtofileN]"
+		exit 1
+	else
+		uid=`id -u $1 2>/dev/null || echo $1`
+		gid=`id -g $2 2>/dev/null || echo $2`
+		mode=$3
+		shift 3
+		chown $uid:$gid $*
+		chmod $mode $*
+	fi
+}
+
+perm() {
+	while read FILE FUID FGID MODE SECON ; do
+		chown $FUID:$FGID "$FILE"
+		chmod $MODE "$FILE"
+		chcon $SECON "$FILE" || true
+	done < "$1"
+	return 0
+}
+
+stdout_to_ui_print() {
+	while read -r line; do
+		ui_print "$line"
+	done
+}
+
+wipe_cache() {
+	echo "wipe_cache" >$UPD_FD
+}
+
+clear_display() {
+	echo "clear_display" >$UPD_FD
+}
+
+enable_reboot() {
+	echo "enable_reboot" >$UPD_FD
+}
+
+sed_patch() {
+	FILE="$1"
+	OPTS=
+	shift
+	while test -n "$1" ; do
+		OPTS="$OPTS -e '$1'"
+		shift
+	done
+	eval sed $OPTS "$FILE" > $TMP/tmp.sed
+	if cmp -s $TMP/tmp.sed "$FILE" ; then
+		rm -f $TMP/tmp.sed
+	else
+		cat $TMP/tmp.sed >"$FILE"
+	fi
+	return 0
+}
+
+# Add empty line between recovery messages & updater-script's
+ui_print
+
+# Test for sane arguments
+if test -z "$UPD_API" -o -z "$UPD_FD" -o -z "$UPD_ZIP" -o -z "$UPD_DIR" ; then
+	ui_print "Wrong script arguments, aborting"
+	exit 1
+fi
+
+if test "$UPD_ZIP" == "/tmp/update.zip"; then
+	ui_print "Can not run in sideload mode"
+	exit 1
+fi
+
+mkdir -p $TMP
+
+SCRIPT=$TMP/updater-script
+if ! package_extract_file META-INF/com/google/android/updater-script $SCRIPT ; then
+	ui_print "Can not extract updater-script. Do you have it in package?"
+	exit 1
+fi
+. $SCRIPT $@
+
+# Damnit, /sbin/sh from recovery does not honor trap EXIT
+# when just leaving the script or doing exit 0
+atexit

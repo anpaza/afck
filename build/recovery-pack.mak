@@ -10,7 +10,7 @@ $(call ASSERT,$(FIRMNAME),Название целевой прошивки до�
 $(call ASSERT,$(PRODEV),Название устройства (ro.product.device) должно быть задано в переменной PRODEV!)
 
 # Название файла
-UPD.ZIP = $(OUT)update-$(FIRMNAME)-$(VER)-$(subst /,_,$(TARGET))$(if $(VARIANT),_$(VARIANT)).zip
+UPD.ZIP = $(OUT)update-$(FIRMNAME)-$(VER)-$(DEVICE)$(if $(VARIANT),_$(VARIANT)).zip
 # Конечные файлы, из которых собирается прошивка
 UPD.FILES = $(addprefix $(IMG.OUT),$(filter $(addsuffix .%,$(UPD.PART)),\
 	$(IMG.COPY) $(IMG.BUILD) $(addsuffix .raw,$(IMG.EXT4))))

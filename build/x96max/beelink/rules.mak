@@ -1,5 +1,7 @@
 # Название прошивки
-FIRMNAME = volksware
+FIRMNAME = Volksware
+# Название целевого устройства (без пробелов)
+DEVICE = X96Max
 # Вариант прошивки, значение по умолчанию
 VARIANT ?= 4G
 # Название аппаратной платформы (ro.product.device)

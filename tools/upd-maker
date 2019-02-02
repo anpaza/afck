@@ -20,12 +20,13 @@
 # предварительно распакованы (например, утилитой simg2img)
 #
 
-NAME="update"
+NAME=
 DEV=
 UPD=
 FILES=
 CMD_START=
 CMD_END=
+SCRIPT=
 
 while test -n "$1" ; do
 	case $1 in
@@ -34,6 +35,7 @@ while test -n "$1" ; do
 		 -o) UPD=$(readlink -m "$2"); shift ;;
 		-cs) CMD_START="$CMD_START\n$2"; shift ;;
 		-ce) CMD_END="$CMD_END\n$2"; shift ;;
+		 -s) SCRIPT="$2"; shift ;;
 		 -*) echo "Неизвестная опция $1"; exit 1 ;;
 		  *) break ;;
 	esac
@@ -41,7 +43,7 @@ while test -n "$1" ; do
 done
 
 FILES=$*
-if test -z "$FILES" -o -z "$UPD" ; then
+if test -z "$UPD" ; then
 	echo "Запуск: upd-maker [опции] -o update.zip [образы разделов...]"
 	echo ""
 	echo "-n <название>   Название пакета обновления (отображается при установке)"
@@ -53,62 +55,76 @@ if test -z "$FILES" -o -z "$UPD" ; then
 fi
 
 DIR=$(dirname $(readlink -f $0))
-UPD_DIR="$(dirname "$UPD")/update"
+UPD_DIR="$(dirname "$UPD")/upd-maker"
 UPD_SCR="$UPD_DIR/META-INF/com/google/android/updater-script"
 
 set -e
 
-echo "Создаём сценарий для update-binary ..."
+echo "Создаём сценарий обновления ..."
 rm -rf "$UPD_DIR"
 mkdir -p "$UPD_DIR"
 unzip -q "$DIR/upd-maker-template.zip" -d "$UPD_DIR"
 mkdir -p "$UPD_DIR/META-INF/com/android"
-echo "pre-device=$DEV" > "$UPD_DIR/META-INF/com/android/metadata"
 
-# Не проверяем на правильное название платформы...
-# иначе пользователь не сможет откатиться этим пакетом после "чужих" прошивок.
-#cat >> "$UPD_SCR" <<EOF
-#product=\`cat /*.prop | sed -ne '/ro.product.device *=/{' -e 's/.*=//' -e p -e '}'\`
-#if test "\$product" != "$DEV" ; then
-#	ui_print "Package is for product $DEV, not for \$product"
-#	exit 1
-#fi
-#EOF
-echo "ui_print \"Installing -=<( $NAME )>=-\"" >> "$UPD_SCR"
+if test -n "$DEV" ; then
+	echo "pre-device=$DEV" >> "$UPD_DIR/META-INF/com/android/metadata"
 
-test -n "$CMD_START" && echo -e "$CMD_START" >> "$UPD_SCR"
-
-for x in $FILES ; do
-	if ! test -e "$x" ; then
-		echo "File $x does not exist" >&2
+	cat >> "$UPD_SCR" <<EOF
+	product=\`cat /*.prop | sed -ne '/ro.product.device *=/{' -e 's/.*=//' -e p -e '}'\`
+	if test "\$product" != "$DEV" ; then
+		ui_print "Package is for product $DEV, not for \$product"
 		exit 1
 	fi
-	file="$(basename "$x")"
-	part="$(echo "$x" | sed -e 's/\..*//')"
-	test "$UPD_DIR/$file" -ot "$x" && cp -a "$x" "$UPD_DIR/$file"
-	dev="/dev/block/$part"
-	desc="partition '$part'"
-	if [ "$part" == "_aml_dtb" ] ; then
-		# Special case for AMLogic dtb partition
-		dev="/dev/dtb"
-		desc="Device Tree"
-	fi
-	cat >> "$UPD_SCR" <<EOF
+EOF
+fi
+
+test -n "$NAME" && echo "ui_print \"Installing -=<( $NAME )>=-\"" >> "$UPD_SCR"
+test -n "$CMD_START" && echo -e "$CMD_START" >> "$UPD_SCR"
+
+if test -n "$SCRIPT" ; then
+	sed -e '1{' -e '/^#!/d' -e '}' "$SCRIPT" >> "$UPD_SCR"
+
+	for x in $FILES ; do
+		if ! test -e "$x" ; then
+			echo "File $x does not exist" >&2
+			exit 1
+		fi
+		file="$(basename "$x")"
+		test "$UPD_DIR/$file" -ot "$x" && cp -a "$x" "$UPD_DIR/$file"
+	done
+else
+	for x in $FILES ; do
+		if ! test -e "$x" ; then
+			echo "File $x does not exist" >&2
+			exit 1
+		fi
+		file="$(basename "$x")"
+		part="$(echo "$file" | sed -e 's/\..*//')"
+		test "$UPD_DIR/$file" -ot "$x" && cp -a "$x" "$UPD_DIR/$file"
+		dev="/dev/block/$part"
+		desc="partition '$part'"
+		if [ "$part" == "_aml_dtb" ] ; then
+			# Special case for AMLogic dtb partition
+			dev="/dev/dtb"
+			desc="Device Tree"
+		fi
+		cat >> "$UPD_SCR" <<EOF
 ui_print " - Flashing $desc"
 if ! package_extract_file $file $dev ; then
 	ui_print "Failed to extract $file to $dev"
 	exit 1
 fi
 EOF
-done
+	done
+fi
 
 test -n "$CMD_END" && echo -e "$CMD_END" >> "$UPD_SCR"
-
-echo "ui_print \"Success!\"" >> "$UPD_SCR"
+test -z "$SCRIPT" && echo "ui_print \"Success!\"" >> "$UPD_SCR"
 
 echo "Создание промежуточного архива ..."
 rm -f "${UPD}~"
 (cd "$UPD_DIR"; zip -qr "${UPD}~" .)
+rm -rf "$UPD_DIR"
 
 echo "Подписываем архив тестовым ключом ..."
 java -jar "$DIR/zipsigner-3.0.jar" "${UPD}~" "${UPD}"
