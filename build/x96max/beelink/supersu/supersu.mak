@@ -24,7 +24,8 @@ define INSTALL
 	$(call APPLY.PATCH.APK,$/system/app/SuperSU/SuperSU.apk,$(DIR)apk-patches)
 	unzip -qoj $(SUPERSU_ZIP) armv7/su -d $/system/xbin
 	rm -f $/system/bin/su
-	cp $(DIR)supersu.rc $/system/etc/init/
+	mkdir -p $/system/etc/init.d
+	cp $(DIR)99SuperSUDaemon $/system/etc/init.d
 	# Уберём следы "автозапуска" daemonsu от amlogic
 	tools/sed-patch -e '/add root inferface/$(COMMA)/^persist.daemonsu.enable/d' \
 		$/system/build.prop
