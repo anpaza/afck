@@ -1,0 +1,87 @@
+#!/sbin/sh
+
+ui_print "+================================================+"
+ui_print "| Installing SuperSU in minimalistic SYSTEM mode |"
+ui_print "+================================================+"
+
+mount /dev/block/system /system
+if test -b /dev/block/vendor ; then
+	ui_print "Treble filesystem structure detected, installing to /vendor"
+
+	# vendor partition exists, android 8.1+
+	vendor=vendor
+	mount /dev/block/vendor /vendor
+	trap "umount /system /vendor" EXIT
+
+	if ! test -e /vendor/etc/init/hw/init.amlogic.board.rc -a \
+		-d /system/etc/init -a -d /vendor/etc/init ; then
+		ui_print "This update is only for AMLogic media boxes"
+		exit 1
+	fi
+else
+	ui_print "Installing everything to /system"
+
+	# no vendor partition, android <=7
+	vendor=system
+	trap "umount /system" EXIT
+
+	if ! test -e /ueventd.amlogic.rc ; then
+		ui_print "This update is only for AMLogic media boxes"
+		exit 1
+	fi
+fi
+
+set -e
+
+ui_print "Removing traces of previous SU installations..."
+# Попытаемся избавиться от предыдущих установленных версий
+rm -rf /system/bin/su /system/bin/.ext \
+    /system/xbin/su /system/xbin/daemonsu /system/xbin/sud \
+    /system/lib/libsupol.so \
+    /system/etc/init.d/99SuperSUDaemon /system/etc/init.d/00daemonsu \
+    /system/etc/.installed_su_daemon \
+    /system/app/Superuser.apk /system/app/Superuser/ \
+    /system/app/SuperSU.apk /system/app/SuperSU/
+
+if test -e /system/bin/app_process32_original ; then
+	mv -f /system/bin/app_process32_original /system/bin/app_process32
+	ln -fs /system/bin/app_process32 /system/bin/app_process
+fi
+
+# Сначала устанавливаем автозапускальщик init.d
+if ! test -d /system/etc/init.d ; then
+	ui_print "Setting up autolaunch from init.d..."
+	mkdir -p /system/etc/init.d
+	package_extract_file $vendor/run-init.d /$vendor/bin
+	if test "$vendor" == "system" ; then
+		sed_patch /system/bin/preinstall.sh \
+			'1a /system/bin/run-init.d'
+	else
+		mkdir -p /vendor/etc/init.d
+		package_extract_file vendor/init.d.rc /vendor/etc/init
+	fi
+	package_extract_file $vendor/init.d.perm $TMP
+	perm $TMP/init.d.perm
+fi
+
+ui_print "Installing SuperSU..."
+package_extract_file 99SuperSUDaemon /system/etc/init.d
+package_extract_file su /system/xbin
+ln -fs su /system/xbin/daemonsu
+
+mkdir -p /system/app/SuperSU
+package_extract_file SuperSU.apk /system/app/SuperSU
+
+if test "$vendor" == "vendor" ; then
+	# Уберём следы "автозапуска" daemonsu от amlogic в 8.1
+	sed_patch /system/build.prop \
+		'/add root inferface/,/^persist.daemonsu.enable/d'
+	sed_patch /vendor/etc/init/hw/init.amlogic.board.rc \
+		'/root permission/,/start daemonsu/d'
+fi
+
+ui_print "Setting up access rights, modes and contexts..."
+package_extract_file supersu.perm $TMP
+perm $TMP/supersu.perm
+
+ui_print "Done"

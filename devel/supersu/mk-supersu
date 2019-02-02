@@ -1,0 +1,5 @@
+#!/bin/sh
+
+../../tools/upd-maker -o UPDATE-supersu-2.82.1.zip -s files/updater-script \
+	files/su files/99SuperSUDaemon files/supersu.perm files/SuperSU.apk \
+	files/system files/vendor

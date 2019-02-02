@@ -1,0 +1,8 @@
+on property:dev.bootcomplete=1
+    start init_d
+
+service init_d /vendor/bin/run-init.d
+    oneshot
+    user root
+    group shell root
+    seclabel u:r:system_server:s0
