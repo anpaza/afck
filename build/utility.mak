@@ -1,5 +1,6 @@
 # Полезные функции, которыми не стоит засорять rules.mak
 
+#-------------------------------------------------------------------------------
 # Наложить патч $1 относительно каталога $2 с дополнительными опциями $3
 define APPLY.PATCH
 	@$(call SAY,$(C.HEAD)Applying patch file $(C.BOLD)$1$(C.RST))
@@ -10,6 +11,7 @@ endef
 APKTOOL = java -jar tools/apktool_2.3.4.jar
 ZIPSIGNER = java -jar tools/zipsigner-3.0.jar
 
+#-------------------------------------------------------------------------------
 # Наложить на APK $1 последовательно патчи из каталога $2
 define APPLY.PATCH.APK
 	@$(call SAY,$(C.HEAD)Patching APK file $(C.BOLD)$1$(C.RST))
@@ -21,11 +23,13 @@ define APPLY.PATCH.APK
 	$(call RM,$1_)
 endef
 
+#-------------------------------------------------------------------------------
 # Проверить наличие файла $1, если нет - выводится ошибка
 define ASSERT.FILE
 $(call ASSERT,$(wildcard $1),$(if $(MOD),Для мода $(C.EMPH)$(MOD)$(C.ERR) н,Н)еобходим файл '$(C.BOLD)$1$(C.ERR)')
 endef
 
+#-------------------------------------------------------------------------------
 # Установка APK в прошивку
 # $1 - system или vendor
 # $2 - название файла APK (без каталога, должен лежать в ingredients/)
@@ -36,7 +40,9 @@ MOD.APK.CON.system = u:object_r:system_file:s0
 MOD.APK.CON.vendor = u:object_r:vendor_app_file:s0
 
 define MOD.APK_
-$(call ASSERT.FILE,ingredients/$2)
+ifeq ($(DISABLED),)
+$$(call ASSERT.FILE,ingredients/$2)
+endif
 
 HELP = $3
 

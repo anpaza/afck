@@ -1,8 +1,9 @@
 $(call MOD.APK,vendor,Backgrounds_HD_Wallpapers.apk,Огромная бесплатная коллекция красивых фонов)
 
+DEPS += $(STAMP.mod-init.d)
+
 # Добавим в установку минимальный набор красивых картинок
 define INSTALL +=
-	mkdir -p $/vendor/etc/init.d
 	cp $(DIR)99-hdwallpapers $/vendor/etc/init.d/
 	mkdir -p $/vendor/app/Backgrounds_HD_Wallpapers/Wallpapers
 	cp -a ingredients/wallpapers/* $/vendor/app/Backgrounds_HD_Wallpapers/Wallpapers/

@@ -1,7 +1,13 @@
 HELP.ALL += $(call HELPL,mod,Выполнить все рецепты модификации образа)
 HELP.ALL += $(call HELPL,help-mod,Цели для наложения отдельных модификаций на прошивку)
 
-# Функция загружает рецепт мода из .mak файла
+# Функция загружает рецепт мода из .mak файла.
+# Результат выполнения функции является кодом для Make, который затем интерпретируется
+# функцией eval. Поэтому работа функции производится в два этапа: на первом этапе
+# составляется *текст*, на втором этапе этот текст интерпретируется как *код*.
+# В раскрытиях, которые необходимо отложить на второй этап, следует использовать
+# двойной знак доллара $$(), чтобы на первом этапе оно превратилось в обычное
+# раскрытие $(), а уже на втором этапе раскрытие реально произошло.
 define MOD.INCLUDE
 # Обнуляем переменные, которые устанавливают моды
 # Строка описания мода
@@ -20,7 +26,7 @@ STAMP := $$(IMG.OUT).stamp.mod-$$(MOD)
 # Файлы, от которых зависит мод
 DEPS := $$(wildcard $$(DIR)*)
 # Для упрощения, базовый каталог, куда распаковываются разделы
-/ := $(IMG.OUT)
+/ := $$(IMG.OUT)
 
 include $1
 
@@ -28,17 +34,18 @@ ifeq ($$(DISABLED),)
 $$(call ASSERT,$$(INSTALL),$$(MOD): Вы должны определить команды в переменной INSTALL)
 HELP.MOD := $$(HELP.MOD)$$(call HELPL,mod-$$(MOD),$$(HELP))
 
-INSTALL.mod-$1 := $$(INSTALL)
+INSTALL.mod-$$(MOD) := $$(INSTALL)
+STAMP.mod-$$(MOD) := $$(STAMP)
 
 .PHONY: mod-$$(MOD)
-mod-$$(MOD): $$(STAMP)
+mod-$$(MOD): $$(STAMP.mod-$$(MOD))
 
-$$(STAMP): $$(DEPS)
+$$(STAMP.mod-$$(MOD)): $$(DEPS)
 	$$(call MKDIR,$$(@D))
-	$$(INSTALL.mod-$1)
+	$$(INSTALL.mod-$(basename $(notdir $1)))
 	$$(call TOUCH,$$@)
 
-MOD.DEPS := $(MOD.DEPS) $$(STAMP)
+MOD.DEPS := $$(MOD.DEPS) $$(STAMP.mod-$$(MOD))
 endif
 endef
 
@@ -51,3 +58,6 @@ mod: $(MOD.DEPS)
 help-mod:
 	@$(call SAY,$(C.SEP)$-$(C.RST)$(HELP.MOD))
 	@$(call SAY,$(C.SEP)$-$(C.RST))
+
+show-rules:
+	$(call SAY,$(foreach _,$(sort $(wildcard $(TARGET.DIR)*/*.mak)),$(call MOD.INCLUDE,$_)$(NL)))

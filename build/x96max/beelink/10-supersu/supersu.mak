@@ -6,7 +6,7 @@ SUPERSU_ZIP = ingredients/UPDATE-SuperSU-v2.82-20170528234214.zip
 $(call ASSERT.FILE,$(SUPERSU_ZIP))
 
 HELP = Установка SuperSU
-DEPS += $(DIR)apk-patches/*
+DEPS += $(STAMP.mod-init.d) $(DIR)apk-patches/*
 
 $(call IMG.UNPACK.EXT4,system)
 $(call IMG.UNPACK.EXT4,vendor)
@@ -24,7 +24,6 @@ define INSTALL
 	$(call APPLY.PATCH.APK,$/system/app/SuperSU/SuperSU.apk,$(DIR)apk-patches)
 	unzip -qoj $(SUPERSU_ZIP) armv7/su -d $/system/xbin
 	rm -f $/system/bin/su
-	mkdir -p $/system/etc/init.d
 	cp $(DIR)99SuperSUDaemon $/system/etc/init.d
 	# Уберём следы "автозапуска" daemonsu от amlogic
 	tools/sed-patch -e '/add root inferface/$(COMMA)/^persist.daemonsu.enable/d' \
@@ -69,7 +68,6 @@ define INSTALL___SYSTEM
 	ln -fs /system/xbin/daemonsu $/system/bin/app_process
 	ln -fs /system/xbin/daemonsu $/system/bin/app_process32
 
-	mkdir -p $/system/etc/init.d
 	unzip -qoj $(SUPERSU_ZIP) common/99SuperSUDaemon -d $/system/etc/init.d
 
 	touch $/system/etc/.installed_su_daemon
