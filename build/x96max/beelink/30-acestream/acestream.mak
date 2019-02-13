@@ -1,1 +1,1 @@
-$(call MOD.APK,vendor,AceStreamATV.apk,Установка Ace Stream Engine для Android TV)
+$(call MOD.USERAPK,AceStreamATV.apk,Установка Ace Stream Engine для Android TV)

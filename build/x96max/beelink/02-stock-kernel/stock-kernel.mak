@@ -7,7 +7,7 @@ BOOT_ZIP = ingredients/x96max-stock-modules.zip
 $(call ASSERT.FILE,$(BOOT_IMG))
 $(call ASSERT.FILE,$(BOOT_ZIP))
 
-HELP = Заменить ядро и модули на стоковые
+HELP = Замена ядра и драйверов на стоковые
 
 $(call IMG.UNPACK.EXT4,vendor)
 
@@ -21,4 +21,10 @@ $(IMG.OUT)boot.PARTITION: $(BOOT_IMG) | $(IMG.OUT).stamp.dir
 define INSTALL
 	rm -rf $/vendor/lib/modules/*
 	unzip $(BOOT_ZIP) -d $/vendor/lib/modules/
+endef
+
+define DESC
+В мод установлено стоковое ядро со всеми преимуществами и недостатками:
+    * Работают часы на передней панели
+    * Плохое качество воспроизведения черезстрочного видео без libamcodec
 endef

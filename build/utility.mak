@@ -30,16 +30,16 @@ $(call ASSERT,$(wildcard $1),$(if $(MOD),Для мода $(C.EMPH)$(MOD)$(C.ERR)
 endef
 
 #-------------------------------------------------------------------------------
-# Установка APK в прошивку
-# $1 - system или vendor
+# Установка APK в прошивку системным приложением
+# $1 - название раздела (system, vendor, ...)
 # $2 - название файла APK (без каталога, должен лежать в ingredients/)
 # $3 - описание APK
-MOD.APK = $(eval $(call MOD.APK_,$1,$2,$3))
+MOD.SYSAPK = $(eval $(call MOD.SYSAPK_,$1,$2,$3))
 
-MOD.APK.CON.system = u:object_r:system_file:s0
-MOD.APK.CON.vendor = u:object_r:vendor_app_file:s0
+MOD.SYSAPK.CON.system = u:object_r:system_file:s0
+MOD.SYSAPK.CON.vendor = u:object_r:vendor_app_file:s0
 
-define MOD.APK_
+define MOD.SYSAPK_
 ifeq ($(DISABLED),)
 $$(call ASSERT.FILE,ingredients/$2)
 endif
@@ -49,10 +49,31 @@ HELP = $3
 $(call IMG.UNPACK.EXT4,$1)
 
 define INSTALL
-	mkdir -p $/$1/app/$(basename $2)
-	cp ingredients/$2 $/$1/app/$(basename $2)/$2
-	tools/img-perm -m 0755 -c $(MOD.APK.CON.$1) $/$1/app/$(basename $2)
-	tools/img-perm -m 0644 -c $(MOD.APK.CON.$1) $/$1/app/$(basename $2)/$2
+	tools/img-instapk -a "$(APKARCH)" -c $(MOD.SYSAPK.CON.$1) -d $/$1/app/$(basename $2) ingredients/$2
+
+endef
+endef
+
+#-------------------------------------------------------------------------------
+# Установка APK в прошивку пользовательским приложением.
+# Требует наличия в прошивке модуля preinstall.
+# $1 - название файла APK (без каталога, должен лежать в ingredients/)
+# $2 - описание APK
+MOD.USERAPK = $(eval $(call MOD.USERAPK_,$1,$2))
+
+define MOD.USERAPK_
+ifeq ($(DISABLED),)
+$$(call ASSERT.FILE,ingredients/$1)
+endif
+
+HELP = $2
+
+$(call IMG.UNPACK.EXT4,vendor)
+
+define INSTALL
+	mkdir -p $/vendor/preinstall
+	cp ingredients/$1 $/vendor/preinstall
+	tools/img-perm -m 0644 -c u:object_r:vendor_app_file:s0 $/vendor/preinstall/$1
 
 endef
 endef

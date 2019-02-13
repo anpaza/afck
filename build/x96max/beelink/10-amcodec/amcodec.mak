@@ -16,3 +16,9 @@ define INSTALL
 	grep -q "^libamcodec.so" $/system/etc/public.libraries.txt || \
 	echo "libamcodec.so" >> $/system/etc/public.libraries.txt
 endef
+
+define DESC
+В прошивку установлена старая, но полезная библиотека AmCodec. Её умеет использовать, \
+например, проигрыватель SPMC (особенно это заметно на Интернет-ТВ каналах обычного \
+(не-HD) разрешения).
+endef

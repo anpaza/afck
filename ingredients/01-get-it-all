@@ -42,13 +42,17 @@ get_manual BusyBox.ver.1.29.2.Binary.TB-BB.zip "https://forum.xda-developers.com
 get UPDATE-SuperSU-v2.82-20170528234214.zip 'https://download.chainfire.eu/1113/SuperSU/UPDATE-SuperSU-v2.82-20170528234214.zip?retrieve_file=1'
 #get SimpleGalleryPro.apk 'https://f-droid.org/repo/com.simplemobiletools.gallery.pro_220.apk'
 #get open_gapps-tvstock.zip 'https://github.com/opengapps/arm/releases/download/20190127/open_gapps-arm-8.1-tvstock-20190127.zip'
+#get org.jwz.android.xscreensaver.apk "https://www.jwz.org/xscreensaver/xscreensaver-5.42.apk"
+get org.gdroid.gdroid.apk "https://f-droid.org/repo/org.gdroid.gdroid_7003.apk"
+get SPMC-17.6a2-spmc-ed022ef-armeabi-v7a.apk "http://download.semperpax.com/spmc/android-arm/SPMC-17.6a2-spmc-ed022ef-armeabi-v7a.apk"
+get OrBot.apk "https://guardianproject.info/releases/Orbot-v15.4.0-BETA-1-ARM-ONLY.apk"
 
+get_apkpure APKPure.apk "https://apkpure.com/apkpure/com.apkpure.aegon/download?from=details"
 get_apkpure Backgrounds_HD_Wallpapers.apk "https://apkpure.com/backgrounds-hd-wallpapers/hd.backgrounds.wallpapers.theme/download?from=details"
 get_apkpure Weather.apk 'https://apkpure.com/weather/com.macropinch.swan/download?from=details'
 get_apkpure XAPK_Installer.apk 'https://apkpure.com/xapk-installer/com.apkpure.installer/download/1040-APK?from=versions%2Fversion'
 get_apkpure atv_launcher.apk 'https://apkpure.com/atv-launcher/ca.dstudio.atvlauncher.free/download?from=details'
 get_apkpure TotalCommander.apk 'https://apkpure.com/total-commander-file-manager/com.ghisler.android.TotalCommander/download?from=details'
-get_apkpure WiFi_WLAN_Plugin_TotCmd_v3.1.apk 'https://apkpure.com/wifi-wlan-plugin-for-totalcmd/com.ghisler.tcplugins.wifitransfer/download?from=details'
-get_apkpure LAN_plugin_TotCmd_v3.06.apk 'https://apkpure.com/lan-plugin-for-total-commander/com.ghisler.tcplugins.LAN/download?from=details'
-get_apkpure FTP_plugin_TotCmd_v2.22.apk 'https://apkpure.com/ftp-plugin-for-total-commander/com.ghisler.tcplugins.FTP/download?from=details'
-#get_apkpure PhotoGallery3DHD.apk  'https://apkpure.com/photo-gallery-3d-hd/photo.view.hd.gallery/download?from=details'
+get_apkpure TotCmd_WiFi_WLAN_Plugin.apk 'https://apkpure.com/wifi-wlan-plugin-for-totalcmd/com.ghisler.tcplugins.wifitransfer/download?from=details'
+get_apkpure TotCmd_LAN_plugin.apk 'https://apkpure.com/lan-plugin-for-total-commander/com.ghisler.tcplugins.LAN/download?from=details'
+get_apkpure TotCmd_FTP_plugin.apk 'https://apkpure.com/ftp-plugin-for-total-commander/com.ghisler.tcplugins.FTP/download?from=details'

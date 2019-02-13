@@ -1,0 +1,8 @@
+#!/system/bin/sh
+
+mkdir -p /sdcard/Pictures/Wallpapers || exit
+cp -a /vendor/Wallpapers/* /sdcard/Pictures/Wallpapers/
+
+mount -o remount,rw /vendor
+rm -rf /vendor/Wallpapers
+rm -f $0

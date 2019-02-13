@@ -3,6 +3,13 @@ $(call ASSERT.FILE,$(BOOTANIM))
 
 HELP = Тюнинг свойств ОС
 
+define DESC
+* Установлена временная зона Москва/Россия
+* Разрешено использование 13 каналов WiFi 2.4ГГц
+* Чувствительность на движения мыши чуть увеличена
+* Заменена загрузочная анимация
+endef
+
 $(call IMG.UNPACK.EXT4,system)
 $(call IMG.UNPACK.EXT4,vendor)
 
@@ -35,4 +42,9 @@ define INSTALL
 		ro.fota.version= \
 		ro.expect.recovery_id=
 	cp $(BOOTANIM) $/system/media/bootanimation.zip
+	tools/img-perm -m 0644 -c u:object_r:system_file:s0 \
+		$/system/media/bootanimation.zip
+	cp $(DIR)15-pointer-speed $/vendor/preinstall/settings
+	tools/img-perm -m 0644 -c u:object_r:vendor_file:s0 \
+		$/vendor/preinstall/settings/15-pointer-speed
 endef

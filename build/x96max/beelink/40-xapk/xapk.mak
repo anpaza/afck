@@ -1,1 +1,1 @@
-$(call MOD.APK,vendor,XAPK_Installer.apk,Установщик APK и XAPK файлов)
+$(call MOD.SYSAPK,vendor,XAPK_Installer.apk,Установщик APK и XAPK файлов)

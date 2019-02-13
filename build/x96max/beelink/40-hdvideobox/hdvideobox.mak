@@ -1,1 +1,1 @@
-$(call MOD.APK,vendor,HDVideoBox.apk,Программа для просмотра кино)
+$(call MOD.USERAPK,HDVideoBox.apk,Программа для просмотра кино)

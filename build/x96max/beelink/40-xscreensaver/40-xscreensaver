@@ -1,0 +1,4 @@
+secure screensaver_activate_on_dock 0
+secure screensaver_activate_on_sleep 1
+secure screensaver_components org.jwz.xscreensaver/org.jwz.xscreensaver.gen.Daydream$XAnalogTV
+secure screensaver_enabled 1

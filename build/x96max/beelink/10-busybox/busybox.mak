@@ -9,6 +9,10 @@ $(call ASSERT.FILE,$(BUSYBOX_ZIP))
 
 HELP = Установка BusyBox/ToyBox
 
+define DESC
+В систему установлена свежая версия BusyBox.
+endef
+
 $(call IMG.UNPACK.EXT4,system)
 $(call IMG.UNPACK.EXT4,vendor)
 

@@ -8,6 +8,12 @@ $(call ASSERT.FILE,$(SUPERSU_ZIP))
 HELP = Установка SuperSU
 DEPS += $(STAMP.mod-init.d) $(DIR)apk-patches/*
 
+define DESC
+Установлена последняя версия SuperSU.
+В этой версии отключена проверка на обновление, иначе можно легко привести \
+систему в неработоспособное состояние.
+endef
+
 $(call IMG.UNPACK.EXT4,system)
 $(call IMG.UNPACK.EXT4,vendor)
 

@@ -16,6 +16,8 @@ HELP :=
 INSTALL :=
 # По умолчанию модуль включён
 DISABLED :=
+# Многострочное описание мода для файла README
+DESC :=
 
 # Название цели вычисляем по имени каталога
 MOD := $$(basename $$(notdir $1))
@@ -36,28 +38,55 @@ HELP.MOD := $$(HELP.MOD)$$(call HELPL,mod-$$(MOD),$$(HELP))
 
 INSTALL.mod-$$(MOD) := $$(INSTALL)
 STAMP.mod-$$(MOD) := $$(STAMP)
+HELP.mod-$$(MOD) := $$(HELP)
+DESC.mod-$$(MOD) := $$(DESC)
 
 .PHONY: mod-$$(MOD)
 mod-$$(MOD): $$(STAMP.mod-$$(MOD))
 
+# В командах нельзя использовать переменные, определённые выше,
+# т.к. они интерпретируются непосредственно во время eval.
 $$(STAMP.mod-$$(MOD)): $$(DEPS)
 	$$(call MKDIR,$$(@D))
 	$$(INSTALL.mod-$(basename $(notdir $1)))
 	$$(call TOUCH,$$@)
 
 MOD.DEPS := $$(MOD.DEPS) $$(STAMP.mod-$$(MOD))
+MOD.ALL := $$(MOD.ALL) $$(MOD)
 endif
 endef
 
 # Загрузим все рецепты (патчи, дополнения и т.п.), которые есть для нашей платформы
 $(foreach _,$(sort $(wildcard $(TARGET.DIR)*/*.mak)),$(eval $(call MOD.INCLUDE,$_)))
 
-.PHONY: mod help-mod
+.PHONY: mod help-mod mod-help mod-doc
 mod: $(MOD.DEPS)
 
-help-mod:
+help-mod mod-help:
 	@$(call SAY,$(C.SEP)$-$(C.RST)$(HELP.MOD))
 	@$(call SAY,$(C.SEP)$-$(C.RST))
 
 show-rules:
 	$(call SAY,$(foreach _,$(sort $(wildcard $(TARGET.DIR)*/*.mak)),$(call MOD.INCLUDE,$_)$(NL)))
+
+MOD.DOC = $(OUT)$(FIRMNAME)-$(VER)-$(DEVICE)$(if $(VARIANT),_$(VARIANT)).md
+DEPLOY += $(MOD.DOC)
+mod-doc: $(MOD.DOC)
+
+MOD.DOC.MAKE = $(foreach _,$(MOD.ALL),$(call MOD.DOC.MAKE_,$_))
+define MOD.DOC.MAKE_
+
+* $_ - $(HELP.mod-$1)
+$(if $(DESC.mod-$1),  $(DESC.mod-$1))
+endef
+
+# Замена в докуметнации специальных тегов на значения переменных
+MOD.SEDREPL = -e 's/@FIRMNAME@/$(FIRMNAME)/g' \
+	      -e 's/@VER@/$(VER)/g' \
+	      -e 's/@DEVICE@/$(DEVICE)/g' \
+	      -e 's/@VARIANT@/$(VARIANT)/g'
+
+$(MOD.DOC): $(MAKEFILE_LIST)
+	sed $(TARGET.DIR)/README-head.md $(MOD.SEDREPL) >$@
+	@$(call SAY,$(call MOD.DOC.MAKE)) | sed $(MOD.SEDREPL) >>$@
+	sed $(TARGET.DIR)/README-tail.md $(MOD.SEDREPL) >>$@

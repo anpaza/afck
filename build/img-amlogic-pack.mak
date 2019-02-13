@@ -55,7 +55,7 @@ $$(IMG.OUT)$1: $$(IMG.OUT)$(basename $1)_contexts.all $$(IMG.OUT).stamp.unpack-$
 $$(IMG.OUT)$(basename $1)_contexts.all: $$(FILE_CONTEXTS.$(basename $1))
 	tools/merge-contexts $$^ >$$@
 
-$$(FILE_CONTEXTS.$(basename $1)): $$(IMG.OUT).stamp.unpack-$(basename $1)
+$$(FILE_CONTEXTS.$(basename $1)): $$(IMG.OUT).stamp.unpack-$(basename $1) $(MOD.DEPS)
 
 endef
 

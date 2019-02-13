@@ -1,13 +1,12 @@
-$(call MOD.APK,vendor,Backgrounds_HD_Wallpapers.apk,Огромная бесплатная коллекция красивых фонов)
+$(call MOD.USERAPK,Backgrounds_HD_Wallpapers.apk,Огромная бесплатная коллекция красивых фонов)
 
 DEPS += $(STAMP.mod-init.d)
 
 # Добавим в установку минимальный набор красивых картинок
 define INSTALL +=
-	cp $(DIR)99-hdwallpapers $/vendor/etc/init.d/
-	mkdir -p $/vendor/app/Backgrounds_HD_Wallpapers/Wallpapers
-	cp -a ingredients/wallpapers/* $/vendor/app/Backgrounds_HD_Wallpapers/Wallpapers/
-	$(foreach _,$(wildcard ingredients/wallpapers/*),\
-		tools/img-perm -m 0644 -c u:object_r:vendor_app_file:s0 $/vendor/app/Backgrounds_HD_Wallpapers/Wallpapers/$(notdir $_)$(NL))
+	cp $(DIR)00-wallpapers $/vendor/etc/init.d/
+	mkdir -p $/vendor/Wallpapers
+	cp -a ingredients/wallpapers/* $/vendor/Wallpapers
+	tools/img-perm -m 0644 -c u:object_r:vendor_app_file:s0 $/vendor/Wallpapers/*
 	tools/img-perm -f $(DIR)hdwallpapers.perm -b $/
 endef

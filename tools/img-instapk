@@ -1,0 +1,62 @@
+#!/bin/bash
+#
+# Осуществляет предустановку APK в указанный каталог.
+# Утилита не компилирует файлы dex в odex; это будет сделано при первой загрузке.
+#
+
+DIR=
+SECON=
+ARCH=
+HELP=YES
+
+# Путь к другим утилитам
+TOOLS_DIR=$(dirname $(readlink -f $0))
+
+function inst_apk() {
+	APK="$1"
+
+	if ! test -e "$APK" ; then
+		echo "$0: Файл APK $1 не найден"
+		return 1
+	fi
+
+	test -z "$ARCH" && ARCH="armeabi"
+	test -z "$SECON" && SECON="u:object_r:system_file:s0"
+
+	mkdir -p "$DIR"
+	rm -rf "$DIR/lib"
+	cp "$APK" "$DIR"
+
+	APKFN=$(basename "$APK")
+
+	$TOOLS_DIR/img-perm -m 0755 -c "$SECON" "$DIR"
+	$TOOLS_DIR/img-perm -m 0644 -c "$SECON" "$DIR/$APKFN"
+
+	for arch in $ARCH ; do
+		# Распакуем динамические библиотеки
+		unzip -q "$APK" -d "$DIR" "lib/$arch" 2>/dev/null || continue
+		mv "$DIR"/lib/$arch/* "$DIR"/lib
+		rmdir "$DIR"/lib/$arch
+	done
+}
+
+while [ -n "$1" ] ; do
+	case $1 in
+		-a) ARCH="$2"; shift ;;
+		-d) DIR="$2"; shift ;;
+		-c) SECON="$2"; shift ;;
+		-*) echo "$0: Неизвестная опция $1"; exit 1 ;;
+		 *) inst_apk "$1"; HELP=; shift ;;
+	esac
+
+	shift
+done
+
+if test -n "$HELP" ; then
+	echo "Предустанавливает APK в указанный каталог"
+	echo "Запуск: $0 [опции] [файл.APK]"
+	echo ""
+	echo "-a Целевая архитектура (armeabi, arm64, ...)"
+	echo "-d Каталог для установки"
+	echo "-c Контекст SELinux для файлов пакета"
+fi

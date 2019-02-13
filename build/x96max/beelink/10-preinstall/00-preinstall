@@ -1,0 +1,33 @@
+#!/system/bin/sh
+
+echo &>/data/local/preinstall.log
+
+# Уже установленные пакеты не будут повторно устанавливаться
+echo "Установка предустановленных пакетов..."
+for apk in /vendor/preinstall/*.apk; do
+	test -r "$apk" || continue
+	echo "* Устанавливаем $apk ..."
+	if /system/bin/pm install "$apk" ; then
+		true
+	fi
+done
+
+# Настройки по умолчанию
+echo "Применяем настройки дистрибутива..."
+for s in $(find /vendor/preinstall/settings -type f | sort) ; do
+	test -r "$s" || continue
+	while read namespace key value tag ; do
+		if test -z "$value" ; then
+			echo "* Удаляем $namespace:$key"
+			settings delete "$namespace" "$key"
+		else
+			echo "* Настройка $namespace:$key=$value"
+			settings put "$namespace" "$key" "$value" $tag
+		fi
+	done < $s
+done
+
+echo "Завершено, самоудаляемся..."
+mount -o remount,rw /vendor
+rm -rf /vendor/preinstall
+rm -f $0

@@ -1,4 +1,4 @@
-HELP = Очистка прошивки Beelink от мусора
+HELP = Очистка прошивка Beelink от мусора
 
 $(call IMG.UNPACK.EXT4,system)
 $(call IMG.UNPACK.EXT4,vendor)

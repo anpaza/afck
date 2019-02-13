@@ -1,1 +1,1 @@
-$(call MOD.APK,vendor,DroidTvSettings.apk,Настройки TV Settings из первоначальной прошивки)
+$(call MOD.SYSAPK,vendor,DroidTvSettings.apk,Настройки TV Settings из оригинальной прошивки)
