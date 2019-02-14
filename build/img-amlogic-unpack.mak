@@ -39,7 +39,7 @@ $(IMG.IN).stamp.unpack: ingredients/$(IMG.BASE) $(IMG.IN).stamp.dir
 #
 # Функция добавляет необходимые зависимости в переменную DEPS.
 define IMG.UNPACK.EXT4
-$(if $(filter $1.PARTITION,$(IMG.COPY)),$(eval $(call IMG.UNPACK.EXT4_,$1)))
+$(if $(filter $1.PARTITION,$(IMG.COPY)),$(eval $(call IMG.UNPACK.EXT4_,$1)))\
 $(eval DEPS := $(DEPS) $(IMG.OUT).stamp.unpack-$1)
 endef
 

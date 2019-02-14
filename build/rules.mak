@@ -1,3 +1,6 @@
+# Для переносимости используем всегда bash
+export SHELL := /bin/bash
+
 include build/colors.mak
 
 # ----------- # Цель по умолчанию # ----------- #
