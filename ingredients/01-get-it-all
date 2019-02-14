@@ -39,6 +39,7 @@ get_apkpure() {
 }
 
 get_manual BusyBox.ver.1.29.2.Binary.TB-BB.zip "https://forum.xda-developers.com/devdb/project/?id=20023#downloads"
+get_manual frytv90.apk "https://4pda.ru/forum/dl/post/15048550/frytv90.apk"
 get UPDATE-SuperSU-v2.82-20170528234214.zip 'https://download.chainfire.eu/1113/SuperSU/UPDATE-SuperSU-v2.82-20170528234214.zip?retrieve_file=1'
 #get SimpleGalleryPro.apk 'https://f-droid.org/repo/com.simplemobiletools.gallery.pro_220.apk'
 #get open_gapps-tvstock.zip 'https://github.com/opengapps/arm/releases/download/20190127/open_gapps-arm-8.1-tvstock-20190127.zip'
@@ -46,6 +47,7 @@ get UPDATE-SuperSU-v2.82-20170528234214.zip 'https://download.chainfire.eu/1113/
 get org.gdroid.gdroid.apk "https://f-droid.org/repo/org.gdroid.gdroid_7003.apk"
 get SPMC-17.6a2-spmc-ed022ef-armeabi-v7a.apk "http://download.semperpax.com/spmc/android-arm/SPMC-17.6a2-spmc-ed022ef-armeabi-v7a.apk"
 get OrBot.apk "https://guardianproject.info/releases/Orbot-v15.4.0-BETA-1-ARM-ONLY.apk"
+get AceStreamATV.apk "http://dl.acestream.org/products/acestream-engine/android-tv/armv7/latest"
 
 get_apkpure APKPure.apk "https://apkpure.com/apkpure/com.apkpure.aegon/download?from=details"
 get_apkpure Backgrounds_HD_Wallpapers.apk "https://apkpure.com/backgrounds-hd-wallpapers/hd.backgrounds.wallpapers.theme/download?from=details"
