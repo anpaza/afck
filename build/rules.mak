@@ -1,3 +1,6 @@
+# Для переносимости используем всегда bash
+export SHELL := /bin/bash
+
 include build/colors.mak
 
 # ----------- # Цель по умолчанию # ----------- #
@@ -52,6 +55,16 @@ ADD = $(shell expr '$1' + '$2')
 # Текущая дата и время
 DATE = $(shell date +%x)
 TIME = $(shell date +%X)
+# Функция для сравнения номера версии
+VER_CHECK = $(shell expr $1 '>' $3 '|' '(' $1 '==' $3 '&' $2 '>=' $4 ')')
+
+# Старший и младший номер версии MAKE
+MAKEVER_HI := $(word 1,$(subst .,$(SPACE),$(MAKE_VERSION)))
+MAKEVER_LO := $(word 2,$(subst .,$(SPACE),$(MAKE_VERSION)))
+# Нужен GNU Make не ниже 3.0
+ifneq ($(call VER_CHECK,$(MAKEVER_HI),$(MAKEVER_LO),3,0),1)
+$(error AFCK build system requires GNU Make version 3.0 or higher)
+endif
 
 # ---------- # Каталоги и утилиты # ---------- #
 

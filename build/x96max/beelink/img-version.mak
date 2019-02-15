@@ -1,3 +1,3 @@
-VER.HI = 0
-VER.LO = 1
-VER.REV = 0
+VER.HI=1
+VER.LO=0
+VER.REV=0
