@@ -1,0 +1,3 @@
+#!/bin/sh
+
+../../tools/upd-maker -o UPDATE-unsu-1.zip -s updater-script

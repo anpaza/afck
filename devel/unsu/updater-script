@@ -1,0 +1,56 @@
+#!/sbin/sh
+# A little modified script from
+# -----------------------------------
+# unSU Script: Recovery Flashable Zip
+# osm0sis @ xda-developers
+# -----------------------------------
+
+ui_print "+=============================================+"
+ui_print "| Uninstalling all traces of SU except Magick |"
+ui_print "+=============================================+"
+
+mnt data
+mnt system
+mnt vendor
+
+set -e
+
+# Попытаемся избавиться от предыдущих установленных версий
+rm -rf /data/app/me.phh.superuser* /data/data/me.phh.superuser* /data/su
+rm -rf /cache/.supersu /cache/su.img /cache/SuperSU.apk /data/.supersu \
+	/data/stock_boot_*.img.gz /data/su.img /data/SuperSU.apk \
+	/data/app/eu.chainfire.supersu* /data/data/eu.chainfire.supersu*
+rm -rf /system/.pin /system/.supersu /system/app/Superuser.apk \
+	/system/app/SuperSU /system/bin/.ext /system/bin/app_process_init \
+	/system/etc/.installed_su_daemon /system/etc/install-recovery.sh \
+	/system/etc/init.d/99SuperSUDaemon /system/lib/libsupol.so \
+	/system/lib64/libsupol.so /system/su.d /system/xbin/daemonsu \
+	/system/bin/su /system/xbin/su /system/xbin/sugote \
+	/system/xbin/sugote-mksh /system/xbin/supolicy \
+	/cache/.supersu /data/.supersu /data/app/eu.chainfire.supersu* \
+	/data/data/eu.chainfire.supersu*
+rm -rf /system/app/Superuser.apk /system/etc/.has_su_daemon \
+	/system/xbin/su /cache/su \
+	/cache/Superuser.apk /cache/install-recovery-sh \
+	/data/app/com.koushikdutta.superuser* \
+	/data/data/com.koushikdutta.superuser*
+rm -rf /system/xbin/sud /system/etc/init.d/00daemonsu \
+	/system/app/Superuser.apk /system/app/Superuser/ \
+	/system/app/SuperSU.apk /system/app/SuperSU/
+
+if test -e /system/bin/app_process32_original ; then
+	mv -f /system/bin/app_process32_original /system/bin/app_process32
+fi
+if test -e /system/bin/app_process64_original ; then
+	mv -f /system/bin/app_process64_original /system/bin/app_process64
+fi
+if test -e /system/bin/install-recovery_original.sh ; then
+	mv -f /system/bin/install-recovery_original.sh /system/bin/install-recovery.sh
+fi
+if test -e /system/bin/app_process64; then
+	ln -sf app_process64 /system/bin/app_process
+else
+	ln -sf app_process32 /system/bin/app_process
+fi
+
+ui_print "Done"

@@ -4,17 +4,18 @@ ui_print "+================================================+"
 ui_print "| Installing SuperSU in minimalistic SYSTEM mode |"
 ui_print "+================================================+"
 
-mount /dev/block/system /system
+mnt data
+mnt system
+
 if test -b /dev/block/vendor ; then
 	ui_print "Treble filesystem structure detected, installing to /vendor"
 
 	# vendor partition exists, android 8.1+
 	vendor=vendor
-	mount /dev/block/vendor /vendor
-	trap "umount /system /vendor" EXIT
+	mnt vendor
 
 	if ! test -e /vendor/etc/init/hw/init.amlogic.board.rc -a \
-		-d /system/etc/init -a -d /vendor/etc/init ; then
+		-d /vendor/etc/init ; then
 		ui_print "This update is only for AMLogic media boxes"
 		exit 1
 	fi
@@ -23,29 +24,57 @@ else
 
 	# no vendor partition, android <=7
 	vendor=system
-	trap "umount /system" EXIT
 
 	if ! test -e /ueventd.amlogic.rc ; then
 		ui_print "This update is only for AMLogic media boxes"
+		exit 1
+	fi
+
+	if ! test -d /system/etc/init.d -o -e /system/bin/preinstall.sh  ; then
+		ui_print "No /system/bin/preinstall.sh and no /system/etc/init.d/"
 		exit 1
 	fi
 fi
 
 set -e
 
-ui_print "Removing traces of previous SU installations..."
 # Попытаемся избавиться от предыдущих установленных версий
-rm -rf /system/bin/su /system/bin/.ext \
-    /system/xbin/su /system/xbin/daemonsu /system/xbin/sud \
-    /system/lib/libsupol.so \
-    /system/etc/init.d/99SuperSUDaemon /system/etc/init.d/00daemonsu \
-    /system/etc/.installed_su_daemon \
-    /system/app/Superuser.apk /system/app/Superuser/ \
-    /system/app/SuperSU.apk /system/app/SuperSU/
+ui_print "Removing traces of previous SU installations..."
+rm -rf /data/app/me.phh.superuser* /data/data/me.phh.superuser* /data/su
+rm -rf /cache/.supersu /cache/su.img /cache/SuperSU.apk /data/.supersu \
+	/data/stock_boot_*.img.gz /data/su.img /data/SuperSU.apk \
+	/data/app/eu.chainfire.supersu* /data/data/eu.chainfire.supersu*
+rm -rf /system/.pin /system/.supersu /system/app/Superuser.apk \
+	/system/app/SuperSU /system/bin/.ext /system/bin/app_process_init \
+	/system/etc/.installed_su_daemon /system/etc/install-recovery.sh \
+	/system/etc/init.d/99SuperSUDaemon /system/lib/libsupol.so \
+	/system/lib64/libsupol.so /system/su.d /system/xbin/daemonsu \
+	/system/bin/su /system/xbin/su /system/xbin/sugote \
+	/system/xbin/sugote-mksh /system/xbin/supolicy \
+	/cache/.supersu /data/.supersu /data/app/eu.chainfire.supersu* \
+	/data/data/eu.chainfire.supersu*
+rm -rf /system/app/Superuser.apk /system/etc/.has_su_daemon \
+	/system/xbin/su /cache/su \
+	/cache/Superuser.apk /cache/install-recovery-sh \
+	/data/app/com.koushikdutta.superuser* \
+	/data/data/com.koushikdutta.superuser*
+rm -rf /system/xbin/sud /system/etc/init.d/00daemonsu \
+	/system/app/Superuser.apk /system/app/Superuser/ \
+	/system/app/SuperSU.apk /system/app/SuperSU/
 
 if test -e /system/bin/app_process32_original ; then
 	mv -f /system/bin/app_process32_original /system/bin/app_process32
-	ln -fs /system/bin/app_process32 /system/bin/app_process
+fi
+if test -e /system/bin/app_process64_original ; then
+	mv -f /system/bin/app_process64_original /system/bin/app_process64
+fi
+if test -e /system/bin/install-recovery_original.sh ; then
+	mv -f /system/bin/install-recovery_original.sh /system/bin/install-recovery.sh
+fi
+if test -e /system/bin/app_process64; then
+	ln -sf app_process64 /system/bin/app_process
+else
+	ln -sf app_process32 /system/bin/app_process
 fi
 
 # Сначала устанавливаем автозапускальщик init.d
@@ -67,6 +96,7 @@ fi
 ui_print "Installing SuperSU..."
 package_extract_file 99SuperSUDaemon /system/etc/init.d
 package_extract_file su /system/xbin
+ln -fs ../xbin/su /system/bin/su
 ln -fs su /system/xbin/daemonsu
 
 mkdir -p /system/app/SuperSU

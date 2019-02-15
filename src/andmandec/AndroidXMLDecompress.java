@@ -4,14 +4,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
- 
+
 class AndroidXMLDecompress {
         // decompressXML -- Parse the 'compressed' binary form of Android XML docs
         // such as for AndroidManifest.xml in .apk files
         public static int endDocTag = 0x00100101;
         public static int startTag = 0x00100102;
         public static int endTag = 0x00100103;
- 
+
          static void prt(String str) {
                 //System.err.print(str);
         }
@@ -19,7 +19,7 @@ class AndroidXMLDecompress {
         public static String decompressXML(byte[] xml) {
 
                 StringBuilder finalXML = new StringBuilder();
-              
+
                 // Compressed XML file/bytes starts with 24x bytes of data,
                 // 9 32 bit words in little endian order (LSB first):
                 // 0th word is 03 00 08 00
@@ -38,7 +38,7 @@ class AndroidXMLDecompress {
                 // chars.
                 int stOff = sitOff + numbStrings * 4; // StringTable follows
                                                                                                 // StrIndexTable
- 
+
                 // XMLTags, The XML tag tree starts after some unknown content after the
                 // StringTable. There is some unknown data after the StringTable, scan
                 // forward from this point to the flag for the start of an XML start
@@ -53,7 +53,7 @@ class AndroidXMLDecompress {
                                 break;
                         }
                 } // end of hack, scanning for start of first start tag
- 
+
                 // XML tags and attributes:
                 // Every XML start and end tag consists of 6 32 bit words:
                 // 0th word: 02011000 for startTag and 03011000 for endTag
@@ -63,12 +63,12 @@ class AndroidXMLDecompress {
                 // 4th word: StringIndex of NameSpace name, or FFFFFFFF for default NS
                 // 5th word: StringIndex of Element Name
                 // (Note: 01011000 in 0th word means end of XML document, endDocTag)
- 
+
                 // Start tags (not end tags) contain 3 more words:
                 // 6th word: 14001400 meaning??
                 // 7th word: Number of Attributes that follow this tag(follow word 8th)
                 // 8th word: 00000000 meaning??
- 
+
                 // Attributes consist of 5 words:
                 // 0th word: StringIndex of Attribute Name's Namespace, or FFFFFFFF
                 // 1st word: StringIndex of Attribute Name
@@ -76,7 +76,7 @@ class AndroidXMLDecompress {
                 // used
                 // 3rd word: Flags?
                 // 4th word: str ind of attr value again, or ResourceId of value
- 
+
                 // TMP, dump string table to tr for debugging
                 // tr.addSelect("strings", null);
                 // for (int ii=0; ii<numbStrings; ii++) {
@@ -85,7 +85,7 @@ class AndroidXMLDecompress {
                 // tr.add(String.valueOf(ii), str);
                 // }
                 // tr.parent();
- 
+
                 // Step through the XML tree element tags and attributes
                 int off = xmlTagOff;
                 int indent = 0;
@@ -97,7 +97,7 @@ class AndroidXMLDecompress {
                         // int tag3 = LEW(xml, off+3*4);
                         int nameNsSi = LEW(xml, off + 4 * 4);
                         int nameSi = LEW(xml, off + 5 * 4);
- 
+
                         if (tag0 == startTag) { // XML START TAG
                                 int tag6 = LEW(xml, off + 6 * 4); // Expected to be 14001400
                                 int numbAttrs = LEW(xml, off + 7 * 4); // Number of Attributes
@@ -107,7 +107,7 @@ class AndroidXMLDecompress {
                                 String name = compXmlString(xml, sitOff, stOff, nameSi);
                                 // tr.addSelect(name, null);
                                 startTagLineNo = lineNo;
- 
+
                                 // Look for the Attributes
                                 StringBuffer sb = new StringBuffer();
                                 for (int ii = 0; ii < numbAttrs; ii++) {
@@ -134,18 +134,15 @@ class AndroidXMLDecompress {
                                                 attrValue = "resourceID 0x" + Integer.toHexString (attrResId);
                                             else 
                                                  attrValue = Integer.toHexString (attrResId);
-                                            
                                             //System.out.println(attrName + " >>> " + attrValue.split("0x")[1]);
-                                        }                
-       
-                                           // attrValue = Integer.valueOf(Integer.toHexString(attrResId), 16).intValue();
-                                            sb.append(" " + attrName + "=\"" + attrValue + "\"");
+                                        }
+                                        // attrValue = Integer.valueOf(Integer.toHexString(attrResId), 16).intValue();
+                                        sb.append(" " + attrName + "=\"" + attrValue + "\"");
                                         // tr.add(attrName, attrValue);
                                 }
                                 finalXML.append(tabs (indent) + "<" + name + sb + ">\n");
                                 prtIndent(indent, "<" + name + sb + ">");
                                 indent++;
- 
                         } else if (tag0 == endTag) { // XML END TAG
                                 indent--;
                                 off += 6 * 4; // Skip over 6 words of endTag data
@@ -154,10 +151,8 @@ class AndroidXMLDecompress {
                                 prtIndent(indent, "</" + name + "> (line " + startTagLineNo
                                                  + "-" + lineNo + ")");
                                 // tr.parent(); // Step back up the NobTree
- 
                         } else if (tag0 == endDocTag) { // END OF XML DOC TAG
                                 break;
- 
                         } else {
                                 prt("  Unrecognized tag code '" + Integer.toHexString(tag0)
                                                 + "' at offset " + off);
@@ -167,7 +162,7 @@ class AndroidXMLDecompress {
                 //prt("    end at offset " + off);
                 return finalXML.toString();
         } // end of decompressXML
- 
+
         public static String compXmlString(byte[] xml, int sitOff, int stOff, int strInd) {
                 if (strInd < 0)
                         return null;
@@ -183,13 +178,13 @@ class AndroidXMLDecompress {
                 }
                 return ret;
         }
- 
+
         public static String spaces = "                                             ";
- 
+
         public static void prtIndent(int indent, String str) {
                 prt(spaces.substring(0, Math.min(indent * 2, spaces.length())) + str);
         }
- 
+
         // compXmlStringAt -- Return the string stored in StringTable format at
         // offset strOff. This offset points to the 16 bit string length, which
         // is followed by that number of 16 bit (Unicode) chars.
@@ -201,7 +196,7 @@ class AndroidXMLDecompress {
                 }
                 return new String(chars); // Hack, just use 8 byte chars
         } // end of compXmlStringAt
- 
+
         // LEW -- Return value of a Little Endian 32 bit word from the byte array
         // at offset off.
         public static int LEW(byte[] arr, int off) {
@@ -212,13 +207,11 @@ class AndroidXMLDecompress {
                 String fileName = (args.length > 0) ? args[0] : "-";
                 InputStream is = null;
                 ZipFile zip = null;
-               
+
                 if (fileName.endsWith(".apk") || fileName.endsWith(".zip")) {
-                       
                         zip = new ZipFile(fileName);
                         ZipEntry mft = zip.getEntry("AndroidManifest.xml");
                         is = zip.getInputStream(mft);
-                       
                 } else if (fileName == "-") {
                         is = System.in;
                 } else {
@@ -227,14 +220,13 @@ class AndroidXMLDecompress {
 
                 byte[] buf = new byte [1024 * 64];
                 int bytesRead = is.read (buf);
-               
+
                 is.close ();
                 if (zip != null) {
                         zip.close ();
                 }
-               
+
                 String xml = AndroidXMLDecompress.decompressXML(buf);
                 System.out.println(xml);
         }
 }
-

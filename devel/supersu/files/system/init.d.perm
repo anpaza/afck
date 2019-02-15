@@ -1,2 +1,3 @@
 /system/etc/init.d		0	0	0755	u:object_r:system_file:s0
 /system/bin/run-init.d		0	2000	0755	u:object_r:system_file:s0
+/system/bin/preinstall.sh	0	2000	0755	u:object_r:system_file:s0

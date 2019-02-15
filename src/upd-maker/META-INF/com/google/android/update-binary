@@ -1,20 +1,21 @@
 #!/sbin/sh
 
-# Ensure the environment is sane... too often it is not
-export PATH=/bin:/sbin:$TMP/busybox
-busybox mkdir -p $TMP/busybox &>/dev/null && \
-	busybox --install -s $TMP/busybox
-
-# Check if we have some fstab
-test -e /etc/fstab || ( test -e /etc/recovery.fstab && ln /etc/recovery.fstab /etc/fstab )
-# Now we can just do "mount /cache", "mount /vendor", "mount /system" etc
-
 export UPD_API="$1"
 export UPD_FD="/proc/self/fd/$2"
 export UPD_ZIP="$3"
 export TMP=/tmp
 export SCRIPT=$0
+
+# Ensure the environment is sane... too often it is not
+export PATH=/bin:/sbin:$TMP/busybox
+busybox mkdir -p $TMP/busybox &>/dev/null && \
+	busybox --install -s $TMP/busybox
+
 export UPD_DIR=`dirname "$UPD_ZIP"`
+
+# Check if we have some fstab
+test -e /etc/fstab || ( test -e /etc/recovery.fstab && ln /etc/recovery.fstab /etc/fstab )
+# Now we can just do "mount /cache", "mount /vendor", "mount /system" etc
 
 atexit() {
 	SCRIPT=$0
@@ -39,6 +40,7 @@ aterr() {
 	set +e
 	ui_print "Failed at $2:$1"
 	atexit
+	exit 1
 }
 
 # Display error string on failure
@@ -174,6 +176,13 @@ sed_patch() {
 	return 0
 }
 
+mnt() {
+	if test -b /dev/block/$1 ; then
+		ui_print "Mounting /dev/block/$1 ..."
+		mount /dev/block/$1 /$1
+	fi
+}
+
 # Add empty line between recovery messages & updater-script's
 ui_print
 
@@ -195,8 +204,5 @@ if ! package_extract_file META-INF/com/google/android/updater-script $SCRIPT ; t
 	ui_print "Can not extract updater-script. Do you have it in package?"
 	exit 1
 fi
-. $SCRIPT $@
 
-# Damnit, /sbin/sh from recovery does not honor trap EXIT
-# when just leaving the script or doing exit 0
-atexit
+. $SCRIPT $@
