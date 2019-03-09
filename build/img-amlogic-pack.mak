@@ -8,7 +8,7 @@
 $(call ASSERT,$(FIRMNAME),Название целевой прошивки должно быть задано в переменной FIRMNAME!)
 
 # Генерируемый образ для USB Burning Tool
-UBT.IMG = $(OUT)$(FIRMNAME)-$(VER)-$(subst /,_,$(TARGET))$(if $(VARIANT),_$(VARIANT)).img
+UBT.IMG = $(OUT)$(FIRMNAME)-$(VER)-$(DEVICE)$(if $(VARIANT),_$(VARIANT)).img
 # Конечные файлы, из которых собирается прошивка
 UBT.FILES = $(addprefix $(IMG.OUT),$(IMG.COPY) $(IMG.EXT4) $(IMG.BUILD))
 

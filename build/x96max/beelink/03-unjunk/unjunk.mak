@@ -27,3 +27,10 @@ define INSTALL
 	rm -rf $(addprefix $/vendor/app/,OTAUpgrade NativeImagePlayer \
 		FileBrowser AppInstaller)
 endef
+
+define DESC
+Из прошивки удалены ненужные приложения AppMarket, BeeMusic, Music,
+CompanionDeviceManager, FileManager, WAPPushManager, FotaUpdate,
+FotaUpdateReboot, OTAUpgrade, NativeImagePlayer, FileBrowser,
+AppInstaller.
+endef

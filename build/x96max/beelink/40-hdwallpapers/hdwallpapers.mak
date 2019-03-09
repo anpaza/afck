@@ -10,3 +10,8 @@ define INSTALL +=
 	tools/img-perm -m 0644 -c u:object_r:vendor_app_file:s0 $/vendor/Wallpapers/*
 	tools/img-perm -f $(DIR)hdwallpapers.perm -b $/
 endef
+
+define DESC
+Приложение Backgrounds HD Wallpapers позволит легко выбрать фон или скачать картинки
+из онлайн базы данных, содержащей тысячи захватывающих дух фотографий.
+endef

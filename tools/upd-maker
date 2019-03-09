@@ -103,10 +103,14 @@ else
 		test "$UPD_DIR/$file" -ot "$x" && cp -a "$x" "$UPD_DIR/$file"
 		dev="/dev/block/$part"
 		desc="partition '$part'"
-		if [ "$part" == "_aml_dtb" ] ; then
+		if [ "$part" == "_aml_dtb" -o "$part" == "dtb" ] ; then
 			# Special case for AMLogic dtb partition
 			dev="/dev/dtb"
 			desc="Device Tree"
+		elif [ "$part" == "DDR" ] ; then
+			# Special case for bootloader
+			dev="/dev/block/bootloader"
+			desc="Bootloader"
 		fi
 		cat >> "$UPD_SCR" <<EOF
 ui_print " - Flashing $desc"
