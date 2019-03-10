@@ -48,21 +48,34 @@ trap "aterr \$LINENO \$SCRIPT" ERR
 # At exit, copy recovery.log to sticard
 trap "atexit" EXIT
 
+getprop() {
+	(cat /vendor/*.prop /system/*.prop /*.prop 2>/dev/null || true) | \
+		sed -ne "/^$1 *=/{" -e 's/^.*= *//' -e p -e q -e '}'
+}
+
+export TWRP=`getprop ro.twrp.version`
+
 echo "\
 UPD_API: $UPD_API
 UPD_FD:  $UPD_FD
 UPD_ZIP: $UPD_ZIP
-TMP:     $TMP"
+TMP:     $TMP
+TWRP:    $TWRP"
 
 set -o pipefail
 
 ui_print() {
-	# Duplicate to stdout, so that it gets into recovery.log
-	echo "$*"
-	# Also to console
-	echo "$*" > /dev/console
 	# And, of course, to recovery console
 	test -n "$UPD_FD" && echo "ui_print $*" >$UPD_FD
+	if test -z "$TWRP" ; then
+		# Duplicate to stdout, so that it gets into recovery.log
+		echo "$*"
+	else
+		# TWRP will log ui_print's in recovery log, we just have to add \n
+		echo ""
+	fi
+	# Also to UART console
+	echo "$*" > /dev/console
 }
 
 progress() {
@@ -70,9 +83,9 @@ progress() {
 		ui_print "$0 expects 2 args, got $#"
 		ui_print "usage: $0 <fraction> <duration>"
 		exit 1
-	else
-		echo "progress $1 $2" >$UPD_FD
 	fi
+
+	echo "progress $1 $2" >$UPD_FD
 }
 
 show_progress() {
@@ -84,9 +97,9 @@ set_progress() {
 		ui_print "$0 expects 1 args, got $#"
 		ui_print "usage: $0 <fraction>"
 		exit 1
-	else
-		echo "set_progress $1" >$UPD_FD
 	fi
+
+	echo "set_progress $1" >$UPD_FD
 }
 
 package_extract_file() {
@@ -94,13 +107,21 @@ package_extract_file() {
 		ui_print "$0 expects 2 args, got $#"
 		ui_print "usage: $0 <src-file> <dst-dir|dst-file>"
 		exit 1
-	else
-		DEST="$2"
-		test -d "$DEST" && DEST="$2/`basename $1`"
-		if ! unzip -p $UPD_ZIP "$1" > $DEST ; then
-			ui_print "Failed to unzip file \"$1\""
-			exit 1
-		fi
+	fi
+
+	DEST="$2"
+	test -d "$DEST" && DEST="$2/`basename $1`"
+	rm -f "$DEST"
+	if ! unzip -p $UPD_ZIP "$1" > $DEST ; then
+		rm -f "$DEST"
+		ui_print "Failed to unzip file \"$1\""
+		exit 1
+	fi
+	# busybox' unzip will quietly return success if $1 does not exist
+	if ! test -s "$DEST" ; then
+		rm -f "$DEST"
+		ui_print "No file \"$1\" in archive"
+		exit 1
 	fi
 }
 
@@ -108,12 +129,12 @@ package_extract_folder() {
 	if [ $# != 2 ]; then
 		ui_print "$0 expects 2 args, got $#"; echo "usage: $0 <src-dir> <dst-dir>"
 		exit 1
-	else
-		mkdir -p "$2"
-		if ! unzip $UPD_ZIP "$1/*" -d "$2" ; then
-			ui_print "Failed to unzip folder \"$1\""
-			exit 1
-		fi
+	fi
+
+	mkdir -p "$2"
+	if ! unzip -o $UPD_ZIP "$1/*" -d "$2" ; then
+		ui_print "Failed to unzip folder \"$1\""
+		exit 1
 	fi
 }
 
@@ -122,14 +143,14 @@ set_perm() {
 		ui_print "$0 expects 4 args, got $#"
 		ui_print "usage: $0 <uid> <gid> <mode> <pathtofile>[, ... pathtofileN]"
 		exit 1
-	else
-		uid=`id -u $1 2>/dev/null || echo $1`
-		gid=`id -g $2 2>/dev/null || echo $2`
-		mode=$3
-		shift 3
-		chown $uid:$gid $*
-		chmod $mode $*
 	fi
+
+	uid=`id -u $1 2>/dev/null || echo $1`
+	gid=`id -g $2 2>/dev/null || echo $2`
+	mode=$3
+	shift 3
+	chown $uid:$gid $*
+	chmod $mode $*
 }
 
 perm() {
@@ -177,7 +198,12 @@ sed_patch() {
 }
 
 mnt() {
-	if test -b /dev/block/$1 ; then
+	if ! test -b /dev/block/$1 ; then
+		ui_print "Cannot mount /$1, no device /dev/block/$1"
+		exit 1
+	fi
+
+	if ! grep -q "^/$1 " /proc/mounts; then
 		ui_print "Mounting /dev/block/$1 ..."
 		mount /dev/block/$1 /$1
 	fi
