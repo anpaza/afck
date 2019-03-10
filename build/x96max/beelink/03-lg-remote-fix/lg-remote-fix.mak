@@ -11,12 +11,13 @@ $(call ASSERT.FILE,$(DTB_IMG))
 HELP = Исправление ложной реакции на пульты от телевизоров LG
 
 # Сами предоставим раздел boot
-$(call IMG.WILL.BUILD,DDR)
+### УВАГА в текущей версии U-Boot починен пульт, но сломана поддержка Amlogic Burning Tool.
+#$(call IMG.WILL.BUILD,DDR)
 $(call IMG.WILL.BUILD,_aml_dtb)
 
 # Правило для копирования ядра
-$(IMG.OUT)DDR.USB: $(BOOTLOADER_IMG) | $(IMG.OUT).stamp.dir
-	lzma -d $< -c >$@
+#$(IMG.OUT)DDR.USB: $(BOOTLOADER_IMG) | $(IMG.OUT).stamp.dir
+#	lzma -d $< -c >$@
 
 $(IMG.OUT)_aml_dtb.PARTITION: $(DTB_IMG) | $(IMG.OUT).stamp.dir
 	lzma -d $< -c >$@
