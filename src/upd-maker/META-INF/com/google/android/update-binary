@@ -80,8 +80,8 @@ ui_print() {
 
 progress() {
 	if [ $# != 2 ]; then
-		ui_print "$0 expects 2 args, got $#"
-		ui_print "usage: $0 <fraction> <duration>"
+		ui_print "'progress' expects 2 args, got $#"
+		ui_print "usage: progress <fraction> <duration>"
 		exit 1
 	fi
 
@@ -94,8 +94,8 @@ show_progress() {
 
 set_progress() {
 	if [ $# != 1 ]; then
-		ui_print "$0 expects 1 args, got $#"
-		ui_print "usage: $0 <fraction>"
+		ui_print "'set_progress' expects 1 args, got $#"
+		ui_print "usage: set_progress <fraction>"
 		exit 1
 	fi
 
@@ -104,8 +104,8 @@ set_progress() {
 
 package_extract_file() {
 	if [ $# != 2 ]; then
-		ui_print "$0 expects 2 args, got $#"
-		ui_print "usage: $0 <src-file> <dst-dir|dst-file>"
+		ui_print "'package_extract_file' expects 2 args, got $#"
+		ui_print "usage: package_extract_file <src-file> <dst-dir|dst-file>"
 		exit 1
 	fi
 
@@ -127,7 +127,8 @@ package_extract_file() {
 
 package_extract_folder() {
 	if [ $# != 2 ]; then
-		ui_print "$0 expects 2 args, got $#"; echo "usage: $0 <src-dir> <dst-dir>"
+		ui_print "'package_extract_folder' expects 2 args, got $#";
+		ui_print "usage: package_extract_folder <src-dir> <dst-dir>"
 		exit 1
 	fi
 
@@ -139,18 +140,27 @@ package_extract_folder() {
 }
 
 set_perm() {
-	if [ $# != 2 ]; then
-		ui_print "$0 expects 4 args, got $#"
-		ui_print "usage: $0 <uid> <gid> <mode> <pathtofile>[, ... pathtofileN]"
+	if [ $# -lt 4 ]; then
+		ui_print "'set_perm' expects at least 4 args, got $#"
+		ui_print "usage: set_perm <uid> <gid> <mode> [<secontext>] <pathtofile>[, ... pathtofileN]"
 		exit 1
 	fi
 
-	uid=`id -u $1 2>/dev/null || echo $1`
-	gid=`id -g $2 2>/dev/null || echo $2`
-	mode=$3
+	FUID=`id -u $1 2>/dev/null || echo $1`
+	FGID=`id -g $2 2>/dev/null || echo $2`
+	MODE=$3
 	shift 3
-	chown $uid:$gid $*
-	chmod $mode $*
+
+	SECON=
+	if echo "$1" | grep -q "^u:" ; then
+		SECON=$1
+		shift
+	fi
+
+	chown $FUID:$FGID $*
+	chmod $MODE $*
+	# fsck, chcon from busybox always returns exit code 1
+	test -z "$SECON" || chcon $SECON $* || true
 }
 
 perm() {
