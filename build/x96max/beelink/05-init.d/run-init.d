@@ -6,7 +6,7 @@ setprop init.svc.initd running
 run_parts() {
 	exec &>/data/local/$1-init.d.log
 
-	for script in /$1/etc/init.d ; do
+	for script in /$1/etc/init.d/* ; do
 		if test -x "$script" ; then
 			echo "Runnning $script"
 			$script
