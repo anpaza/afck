@@ -35,6 +35,8 @@ while test -n "$1" ; do
 		 -o) UPD=$(readlink -m "$2"); shift ;;
 		-cs) CMD_START="$CMD_START\n$2"; shift ;;
 		-ce) CMD_END="$CMD_END\n$2"; shift ;;
+		-fs) CMD_START=`cat $2`; shift ;;
+		-fe) CMD_END=`cat $2`; shift ;;
 		 -s) SCRIPT="$2"; shift ;;
 		 -*) echo "Неизвестная опция $1"; exit 1 ;;
 		  *) break ;;
@@ -51,6 +53,8 @@ if test -z "$UPD" ; then
 	echo "-o <update.zip> Выходной файл"
 	echo "-cs <команда>   Добавить команды до прошивки"
 	echo "-ce <команда>   Добавить команды после прошивки"
+	echo "-fs <файл>      Вставить команды из файла до прошивки"
+	echo "-fe <файл>      Вставить команды из файла после прошивки"
 	exit 1
 fi
 
@@ -70,11 +74,11 @@ if test -n "$DEV" ; then
 	echo "pre-device=$DEV" >> "$UPD_DIR/META-INF/com/android/metadata"
 
 	cat >> "$UPD_SCR" <<EOF
-	product=\`cat /*.prop | sed -ne '/ro.product.device *=/{' -e 's/.*=//' -e p -e '}'\`
-	if test "\$product" != "$DEV" ; then
-		ui_print "Package is for product $DEV, not for \$product"
-		exit 1
-	fi
+product=\`getprop ro.product.device\`
+if test "\$product" != "$DEV" ; then
+	ui_print "Package is for product $DEV, not for \$product"
+	exit 1
+fi
 EOF
 fi
 
@@ -101,13 +105,17 @@ else
 		file="$(basename "$x")"
 		part="$(echo "$file" | sed -e 's/\..*//')"
 		test "$UPD_DIR/$file" -ot "$x" && cp -a "$x" "$UPD_DIR/$file"
+		case $part in
+			kernel)		part=boot ;;
+			DDR)		part=bootloader ;;
+		esac
 		dev="/dev/block/$part"
 		desc="partition '$part'"
-		if [ "$part" == "_aml_dtb" ] ; then
-			# Special case for AMLogic dtb partition
-			dev="/dev/dtb"
-			desc="Device Tree"
-		fi
+		case $part in
+			bootloader)	desc=Bootloader ;;
+			boot)		desc=Kernel ;;
+			_aml_dtb|dtb)	dev="/dev/dtb"; desc="Device Tree" ;;
+		esac
 		cat >> "$UPD_SCR" <<EOF
 ui_print " - Flashing $desc"
 if ! package_extract_file $file $dev ; then

@@ -1,0 +1,24 @@
+#!/bin/sh
+# Очистка мусора из каталога с данными SPMC
+
+B=Android/data/com.semperpax.spmc17
+D=$B/files/.spmc
+
+echo "Removing previously unpacked data"
+rm -rf $B
+echo "Unpacking SPMC data"
+tar xzf com.semperpax.spmc17.tar.gz || exit 1
+
+echo "Removing junk"
+rm -f $D/.smb/*
+rm -f $D/addons/packages/*
+rm -f $D/temp/spmc*.log
+rm -rf $D/temp/temp
+rm -f $D/userdata/Database/Epg*.db $D/userdata/Database/Textures*.db $D/userdata/Database/Myvideos*.db
+rm -rf $D/userdata/Thumbnails/*
+rm -f $D/userdata/addon_data/plugin.video.quasar/cache/*
+rm -f $D/userdata/addon_data/plugin.video.youtube/kodion/*
+
+echo "Creating new archive"
+tar czf _com.semperpax.spmc17.tar.gz $B || exit 1
+mv -f _com.semperpax.spmc17.tar.gz com.semperpax.spmc17.tar.gz

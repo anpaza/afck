@@ -1,4 +1,10 @@
 #!/bin/sh
+#
+# Этот сценарий попытается скачать все нужне компоненты из разных мест в Интернете.
+# Так как Интернет это динамически изменяющаяся среда, нет гарантии, что все ссылки
+# рабочие, но надеюсь, что большинство файлов всё-таки будет скачано. Остальное можно
+# попытаться найти самостоятельно.
+#
 
 WHITE="[1;37m"
 LRED="[1;31m"
@@ -6,12 +12,15 @@ LGREEN="[1;32m"
 RST="[0m"
 
 get() {
-	if test -e "$1" ; then
-		echo "$1: up-to-date"
+	dst="$1"
+	url="$2"
+	if test -e "$dst" ; then
+		echo "$dst: up-to-date"
 		return 0
 	fi
-	echo "$1: ${LGREEN}downloading${RST}"
-	wget -qO "$1" "$2"
+	expr match "$url" '.*/$' >/dev/null && url="$url/$dst"
+	echo "$dst: ${LGREEN}downloading${RST}"
+	wget -qO "$dst" "$url"
 }
 
 get_manual() {
@@ -38,15 +47,28 @@ get_apkpure() {
 	fi
 }
 
-get_manual BusyBox.ver.1.29.2.Binary.TB-BB.zip "https://forum.xda-developers.com/devdb/project/?id=20023#downloads"
-get_manual frytv90.apk "https://4pda.ru/forum/dl/post/15048550/frytv90.apk"
+ZADE=http://zade.cobra.ru/afck/ingredients/
+
+#get_manual BusyBox.ver.1.29.2.Binary.TB-BB.zip "https://forum.xda-developers.com/devdb/project/?id=20023#downloads"
+get BusyBox.ver.1.29.2.Binary.TB-BB.zip $ZADE
+#get_manual frytv90.apk "https://4pda.ru/forum/dl/post/15048550/frytv90.apk"
+get frytv90.apk $ZADE
+
+get com.semperpax.spmc17.tar.gz $ZADE
+get x96max-bootloader.img.lzma $ZADE
+get x96max-stock-modules.tar.lzma $ZADE
+get x96max-stock-boot-4G.img.lzma $ZADE
+get bootanimation.zip $ZADE
+get DroidTvSettings.apk $ZADE
+
 get UPDATE-SuperSU-v2.82-20170528234214.zip 'https://download.chainfire.eu/1113/SuperSU/UPDATE-SuperSU-v2.82-20170528234214.zip?retrieve_file=1'
 #get SimpleGalleryPro.apk 'https://f-droid.org/repo/com.simplemobiletools.gallery.pro_220.apk'
 #get open_gapps-tvstock.zip 'https://github.com/opengapps/arm/releases/download/20190127/open_gapps-arm-8.1-tvstock-20190127.zip'
 #get org.jwz.android.xscreensaver.apk "https://www.jwz.org/xscreensaver/xscreensaver-5.42.apk"
 get org.gdroid.gdroid.apk "https://f-droid.org/repo/org.gdroid.gdroid_7003.apk"
+get org.schabi.newpipe_71.apk "https://f-droid.org/repo/org.schabi.newpipe_71.apk"
 get SPMC-17.6a2-spmc-ed022ef-armeabi-v7a.apk "http://download.semperpax.com/spmc/android-arm/SPMC-17.6a2-spmc-ed022ef-armeabi-v7a.apk"
-get OrBot.apk "https://guardianproject.info/releases/Orbot-v15.4.0-BETA-1-ARM-ONLY.apk"
+#get OrBot.apk "https://guardianproject.info/releases/Orbot-v15.4.0-BETA-1-ARM-ONLY.apk"
 get AceStreamATV.apk "http://dl.acestream.org/products/acestream-engine/android-tv/armv7/latest"
 
 get_apkpure APKPure.apk "https://apkpure.com/apkpure/com.apkpure.aegon/download?from=details"

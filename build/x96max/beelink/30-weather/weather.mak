@@ -12,3 +12,8 @@ define INSTALL
 	$(call APPLY.PATCH.APK,$/vendor/app/Weather/Weather.apk,$(DIR)apk-patches)
 	tools/img-perm -f $(DIR)weather.perm -b $/
 endef
+
+define DESC
+Для использования в составе ATV Launcher и не только имеется виджет
+отображения погоды.
+endef

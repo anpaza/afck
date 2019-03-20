@@ -1,6 +1,8 @@
 *.img
 *.zip
 *.apk
+*.lzma
+*.gz
 wallpapers
 todo
 useful

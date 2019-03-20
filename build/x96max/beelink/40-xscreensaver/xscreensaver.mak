@@ -9,3 +9,8 @@ DEPS += $(STAMP.mod-preinstall)
 define INSTALL +=
 	cp $(DIR)40-xscreensaver $/vendor/preinstall/settings
 endef
+
+define DESC
+Приложение XScreenSaver, известное пользователям Unix, позволит установить анимацию,
+запускающуюся при простое приставки.
+endef
